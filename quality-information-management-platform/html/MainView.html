@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<?php
+include ('./common/header.html');
+?>		
+	<!-- start: Content -->
+	<div id="content" class="span10">	
+			<ul class="breadcrumb">
+				<li>
+					<i class="icon-home"></i>
+					<a href="MainView.html">主界面</a>
+					<i class="icon-angle-right"></i>
+				</li>
+			</ul>
+			<div class="row-fluid">
+				<div class="span3 statbox blue noMargin" onTablet="span6" onDesktop="span3">
+					<div><font face="微软雅黑">机台:</font></div>
+                    <div class="jitai">
+					<script>
+					var wangon=document.cookie;
+					document.write(wangon);
+                    </script>
+                    </div>
+					<div class="title">
+					<?php
+					echo date("Y/m/d");
+				    ?>
+                    </div>
+				</div>	
+			</div>
+        <div class="row-fluid">
+            <div class="span12 statbox-extendheader blue noMargin" onTablet="span12" onDesktop="span12">
+                <div class="text-center"><strong>近期作废统计(<span id="tablehead_totaldate_start"></span>~<span id="tablehead_totaldate_end"></span>)</strong></div>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="text-center">平均作废</th>
+                    <th class="text-center">平均严重废</th>
+                    <th class="text-center">平均三仓数</th>
+                    <th class="text-center">作废最多区域</th>
+                    <th class="text-center">作废最多K位</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="total_AVGFail" class="text-center"></td>
+                    <td id="total_AVGSer" class="text-center"></td>
+                    <td id="total_AVGPsn" class="text-center"></td>
+                    <td id="total_MaxM" class="text-center"></td>
+                    <td id="total_MaxK" class="text-center"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <div class="span12 statbox-extendheader blue noMargin" onTablet="span12" onDesktop="span12">
+                <div class="text-center"><strong>近期作废明细</strong></div>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="text-center">日期</th>
+                    <th class="text-center">平均作废</th>
+                    <th class="text-center">平均严重废</th>
+                    <th class="text-center">平均三仓数</th>
+                    <th class="text-center">作废最多区域</th>
+                    <th class="text-center">作废最多K位</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="single_date_day1" class="text-center"></td>
+                    <td id="single_AVGFail_day1" class="text-center"></td>
+                    <td id="single_AVGSer_day1" class="text-center"></td>
+                    <td id="single_AVGPsn_day1" class="text-center"></td>
+                    <td id="single_MaxM_day1" class="text-center"></td>
+                    <td id="single_MaxK_day1" class="text-center"></td>
+                </tr>
+                <tr>
+                    <td id="single_date_day2" class="text-center"></td>
+                    <td id="single_AVGFail_day2" class="text-center"></td>
+                    <td id="single_AVGSer_day2" class="text-center"></td>
+                    <td id="single_AVGPsn_day2" class="text-center"></td>
+                    <td id="single_MaxM_day2" class="text-center"></td>
+                    <td id="single_MaxK_day2" class="text-center"></td>
+                </tr>
+                <tr>
+                    <td id="single_date_day3" class="text-center"></td>
+                    <td id="single_AVGFail_day3" class="text-center"></td>
+                    <td id="single_AVGSer_day3" class="text-center"></td>
+                    <td id="single_AVGPsn_day3" class="text-center"></td>
+                    <td id="single_MaxM_day3" class="text-center"></td>
+                    <td id="single_MaxK_day3" class="text-center"></td>
+                </tr>
+                <tr>
+                    <td id="single_date_day4" class="text-center"></td>
+                    <td id="single_AVGFail_day4" class="text-center"></td>
+                    <td id="single_AVGSer_day4" class="text-center"></td>
+                    <td id="single_AVGPsn_day4" class="text-center"></td>
+                    <td id="single_MaxM_day4" class="text-center"></td>
+                    <td id="single_MaxK_day4" class="text-center"></td>
+                </tr>
+                <tr>
+                    <td id="single_date_day5" class="text-center"></td>
+                    <td id="single_AVGFail_day5" class="text-center"></td>
+                    <td id="single_AVGSer_day5" class="text-center"></td>
+                    <td id="single_AVGPsn_day5" class="text-center"></td>
+                    <td id="single_MaxM_day5" class="text-center"></td>
+                    <td id="single_MaxK_day5" class="text-center"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <div id="fivedaydetail_chart" style="width: 100%;height:400px;"></div>
+        </div>
+    </div>
+<?php
+include ('./footer/footer_MainView.html');
+?>
+</html>
