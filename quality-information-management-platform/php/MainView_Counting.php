@@ -153,9 +153,6 @@ function fivedaycount_singleday(){
     }
     return $fivedaydetail;//正序:[arr0=>2018-04-24,arr1=>2018-04-25..]
 }
-function wtf(){
-    echo "doing nothing!";
-}
 function fivedaycount_eachwangon(){
     $totalcount=new Totalcount();
     @ $begindate = $totalcount->find5days()[4];
