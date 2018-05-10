@@ -47,6 +47,7 @@ function sqlexec($sql, $key){                                                   
         while ($row_eachline = sqlsrv_fetch_array($query)) {
             return $row_eachline[$key];
     }
+return(0);
 }
 function runsql_singleday($currentdate,$wangon){                                                                       //一日作废统计
     $sql_MaxK = "select top 1 Maxk as maxk ,COUNT(1) as count
