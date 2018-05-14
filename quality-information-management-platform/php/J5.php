@@ -134,6 +134,12 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     }
 }
 //extractFail();
+function isInSameCol($sheet1,$sheet2){
+    if((($sheet1>=1)&&($sheet1<=7)&&($sheet2>=1)&&($sheet2<=7))||(($sheet1>=8)&&($sheet1<=14)&&($sheet2>=8)&&($sheet2<=14))||(($sheet1>=15)&&($sheet1<=21)&&($sheet2>=15)&&($sheet2<=21))||(($sheet1>=22)&&($sheet1<=28)&&($sheet2>=22)&&($sheet2<=28))||(($sheet1>=29)&&($sheet1<=35)&&($sheet2>=29)&&($sheet2<=35)))
+        {return true;}
+    else
+        {return false;}
+}
 function extractCon(){
     $extractCon=new commondate();
     $lastday=$extractCon->findlastday();
@@ -142,6 +148,7 @@ function extractCon(){
     $params=$extractCon->params;
     $options=$extractCon->options;
     $confail_all[][]=array();
+    $j=0;
     $sql_searchindex = "select tablename,CreateTime from dbo.Indextable
 where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     $query_searchindex = sqlsrv_query($conn_Jitai, $sql_searchindex, $params, $options);
@@ -154,9 +161,8 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             unset($confail);
             $confail[0]=array(0,0,0);
             $i=0;
-            $j=0;
             $count=0;
-            $sql_confail = "select PSN as psn,FormatPos as pos,Reserve3 as area from dbo." . $row_eachwagon['tablename'] ." order by [index]";
+            $sql_confail = "select PSN as psn,FormatPos as pos,MacroIndex as area from dbo." . $row_eachwagon['tablename'] ." order by [index]";
             $query_confail = sqlsrv_query($conn_Jitai, $sql_confail, $params, $options);
             while($row_confail = sqlsrv_fetch_array($query_confail))
             {
@@ -172,7 +178,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                     continue;
                 }
                 else if((@ $confail[$i][0]+3>=$row_confail['psn'])){
-                    if($confail[$i][1]==$row_confail['pos']){
+                    if((isInSameCol($confail[$i][1],$row_confail['pos'])==true)&&($confail[$i][2]==$row_confail['area'])){
                     $count++;
                     $i++;
                     $confail[$i][0]=$row_confail['psn'];
@@ -180,13 +186,13 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                     $confail[$i][2]=$row_confail['area'];
                     $confail[$i][3]=$row_eachwagon['tablename'];
                     }
-                    else if($confail[$i][1]!=$row_confail['pos']){
+                    else{
                         continue;
                     }
 
                 }
                 else if(@ $confail[$i][0]+3<$row_confail['psn']){
-                    if($count<5){
+                    if($count<3){
                         unset($confail);
                         $i=0;
                         $count=0;
@@ -195,7 +201,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                         $confail[$i][2]=$row_confail['area'];
                         $confail[$i][3]=$row_eachwagon['tablename'];
                     }
-                    else if($count>=5){
+                    else if($count>=3){
                         $confail_all[$j]=$confail;
                         $j++;
                         unset($confail);
