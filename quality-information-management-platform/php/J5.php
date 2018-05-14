@@ -72,8 +72,8 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
    $query_searchindex = sqlsrv_query($conn_Jitai, $sql_searchindex, $params, $options);
     @ $row_count = sqlsrv_num_rows($query_searchindex);
     if ($row_count === false) {
-        exit;
         sqlsrv_close($conn_Jitai);
+        exit;
     } else {
         $i = 0;
         while ($row_eachwagon = sqlsrv_fetch_array($query_searchindex)) {
@@ -135,10 +135,12 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
 }
 //extractFail();
 function isInSameCol($sheet1,$sheet2){
-    if((($sheet1>=1)&&($sheet1<=7)&&($sheet2>=1)&&($sheet2<=7))||(($sheet1>=8)&&($sheet1<=14)&&($sheet2>=8)&&($sheet2<=14))||(($sheet1>=15)&&($sheet1<=21)&&($sheet2>=15)&&($sheet2<=21))||(($sheet1>=22)&&($sheet1<=28)&&($sheet2>=22)&&($sheet2<=28))||(($sheet1>=29)&&($sheet1<=35)&&($sheet2>=29)&&($sheet2<=35)))
-        {return true;}
-    else
-        {return false;}
+    for($i=0;$i<5;$i++)
+    {
+        if(($sheet1>=7*$i+1)&&($sheet1<=7*$i+7)&&($sheet2>=7*$i+1)&&($sheet2<=7*$i+7)){
+            return $i+1;}
+    }
+    return false;
 }
 function extractCon(){
     $extractCon=new commondate();
@@ -149,6 +151,7 @@ function extractCon(){
     $options=$extractCon->options;
     $confail_all[][]=array();
     $j=0;
+    $ConCol=0;
     $sql_searchindex = "select tablename,CreateTime from dbo.Indextable
 where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     $query_searchindex = sqlsrv_query($conn_Jitai, $sql_searchindex, $params, $options);
@@ -162,16 +165,14 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             $confail[0]=array(0,0,0);
             $i=0;
             $count=0;
-            $sql_confail = "select PSN as psn,FormatPos as pos,MacroIndex as area from dbo." . $row_eachwagon['tablename'] ." order by [index]";
+            $sql_confail = "select PSN as psn,FormatPos as pos,MacroIndex as area from dbo." . $row_eachwagon['tablename'] ." order by PSN";
             $query_confail = sqlsrv_query($conn_Jitai, $sql_confail, $params, $options);
             while($row_confail = sqlsrv_fetch_array($query_confail))
             {
                 if($confail[$i][0]==0&&$confail[$i][1]==0&&$confail[$i][2]==0)
                 {
-                    $confail[$i][0]=$row_confail['psn'];
-                    $confail[$i][1]=$row_confail['pos'];
-                    $confail[$i][2]=$row_confail['area'];
-                    $confail[$i][3]=$row_eachwagon['tablename'];
+                    $confail[$i]=$row_confail;
+                    $confail[$i][]=$row_eachwagon['tablename'];
                 }
                 else if($confail[$i][0]==$row_confail['psn'])
                 {
@@ -179,44 +180,41 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                 }
                 else if((@ $confail[$i][0]+3>=$row_confail['psn'])){
                     if((isInSameCol($confail[$i][1],$row_confail['pos'])==true)&&($confail[$i][2]==$row_confail['area'])){
-                    $count++;
-                    $i++;
-                    $confail[$i][0]=$row_confail['psn'];
-                    $confail[$i][1]=$row_confail['pos'];
-                    $confail[$i][2]=$row_confail['area'];
-                    $confail[$i][3]=$row_eachwagon['tablename'];
+                        $count++;
+                        $i++;
+                        $confail[$i]=$row_confail;
+                        if($count>=3)
+                            $ConCol=isInSameCol($confail[$i][1],$row_confail['pos']);
                     }
                     else{
-                        continue;
+                        $confail[$i]=$row_confail;
                     }
-
                 }
                 else if(@ $confail[$i][0]+3<$row_confail['psn']){
-                    if($count<3){
+                    if($count<5){
                         unset($confail);
                         $i=0;
                         $count=0;
-                        $confail[$i][0]=$row_confail['psn'];
-                        $confail[$i][1]=$row_confail['pos'];
-                        $confail[$i][2]=$row_confail['area'];
-                        $confail[$i][3]=$row_eachwagon['tablename'];
+                        $confail[$i]=$row_confail;
                     }
-                    else if($count>=3){
-                        $confail_all[$j]=$confail;
-                        $j++;
+                    else if($count>=5){
+                        $confail_all[$j++]=array(
+                            'TableName'=>$row_eachwagon['tablename'],
+                            'ConNumber'=>$i+1,
+                            'StartPsn'=>$confail[0][0],
+                            'EndPsn'=>$confail[$i][0],
+                            'ConCol'=>$ConCol,
+                            'ConArea'=>$confail[0][2]);
                         unset($confail);
                         $i=0;
                         $count=0;
-                        $confail[$i][0]=$row_confail['psn'];
-                        $confail[$i][1]=$row_confail['pos'];
-                        $confail[$i][2]=$row_confail['area'];
-                        $confail[$i][3]=$row_eachwagon['tablename'];
+                        $confail[$i]=$row_confail;
                     }
-            }
+                }
             }
         }
-        print_r($confail_all);
     }
+    print_r($confail_all);
 }
 extractCon();
 ?>
