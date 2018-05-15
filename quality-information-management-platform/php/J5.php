@@ -55,6 +55,15 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         }
         return $lastday;
     }
+    public function returnMacroName($MacroId){
+        $sql = "select top 1 MacroTitle as MacroName from dbo.ModelMacroLog_339
+                  where MacroID=".$MacroId;
+        $query = sqlsrv_query($this->conn_Jitai, $sql, $this->params, $this->options);
+        while ($row = sqlsrv_fetch_array($query)) {
+            return $row['MacroName'];
+        }
+    return 0;
+    }
 }
 
 
@@ -67,6 +76,7 @@ function extractFail()
    $conn_Server=$extractdate->conn_Server;
    $params=$extractdate->params;
    $options=$extractdate->options;
+   $faillist[]=array();
    $sql_searchindex = "select tablename,CreateTime from dbo.Indextable
 where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
    $query_searchindex = sqlsrv_query($conn_Jitai, $sql_searchindex, $params, $options);
@@ -126,15 +136,15 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         $quer_checkifexist = sqlsrv_query($conn_Server, $sql_checkifexist, $params, $options);                          //检查服务器数据库中是否已存在该车号
         while ($checkifexist = sqlsrv_fetch_array($quer_checkifexist)) {
             if ($checkifexist['checksum'] == 0) {                                                                       //计数结果为0表示不存在该车号，执行插入操作
-                $sql_inserindex = "insert into dbo.Kexin_WY([Tablename],[Createtime],[Totalfail],[Serfail],[Psnnum],[MaxK],[MaxM],[Wangonname])
+                $sql_insertFail = "insert into dbo.Kexin_WY([Tablename],[Createtime],[Totalfail],[Serfail],[Psnnum],[MaxK],[MaxM],[Wangonname])
             values('" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $faillist[$temp][5] . "','" . $faillist[$temp][6] . "','" . $faillist[$temp][7] . "')";
-                $query_instoser = sqlsrv_query($conn_Server, $sql_inserindex, $params, $options);
+                $query_instoser = sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
             }
         }
     }
 }
-//extractFail();
-function isInSameCol($sheet1,$sheet2){
+extractFail();
+function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在返回列数，不在返回false
     for($i=0;$i<5;$i++)
     {
         if(($sheet1>=7*$i+1)&&($sheet1<=7*$i+7)&&($sheet2>=7*$i+1)&&($sheet2<=7*$i+7)){
@@ -142,17 +152,18 @@ function isInSameCol($sheet1,$sheet2){
     }
     return false;
 }
-function extractCon(){
+
+function extractCon(){//查找并向服务器端数据库插入连续废
     $extractCon=new commondate();
     $lastday=$extractCon->findlastday();
     $conn_Jitai=$extractCon->conn_Jitai;
     $conn_Server=$extractCon->conn_Server;
     $params=$extractCon->params;
     $options=$extractCon->options;
-    $confail_all[][]=array();
+    $confail_all[]=array();//用来保存连续废的二维数组
     $j=0;
-    $ConCol=0;
-    $sql_searchindex = "select tablename,CreateTime from dbo.Indextable
+    $ConCol=0;//连续废所在的列
+    $sql_searchindex = "select tablename from dbo.Indextable
 where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     $query_searchindex = sqlsrv_query($conn_Jitai, $sql_searchindex, $params, $options);
     @ $row_count = sqlsrv_num_rows($query_searchindex);
@@ -172,13 +183,12 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                 if($confail[$i][0]==0&&$confail[$i][1]==0&&$confail[$i][2]==0)
                 {
                     $confail[$i]=$row_confail;
-                    $confail[$i][]=$row_eachwagon['tablename'];
                 }
                 else if($confail[$i][0]==$row_confail['psn'])
                 {
                     continue;
                 }
-                else if((@ $confail[$i][0]+3>=$row_confail['psn'])){
+                else if(($confail[$i][0]+3>=$row_confail['psn'])){
                     if((isInSameCol($confail[$i][1],$row_confail['pos'])==true)&&($confail[$i][2]==$row_confail['area'])){
                         $count++;
                         $i++;
@@ -190,7 +200,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                         $confail[$i]=$row_confail;
                     }
                 }
-                else if(@ $confail[$i][0]+3<$row_confail['psn']){
+                else if($confail[$i][0]+3<$row_confail['psn']){
                     if($count<5){
                         unset($confail);
                         $i=0;
@@ -199,7 +209,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                     }
                     else if($count>=5){
                         $confail_all[$j++]=array(
-                            'TableName'=>$row_eachwagon['tablename'],
+                            'TableName'=>substr($row_eachwagon['tablename'], 1, 7),
                             'ConNumber'=>$i+1,
                             'StartPsn'=>$confail[0][0],
                             'EndPsn'=>$confail[$i][0],
@@ -214,7 +224,62 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             }
         }
     }
-    print_r($confail_all);
+    for($temp=0;$temp<count($confail_all);$temp++){
+        $sql_checkifexist = "select count(1) as checksum from dbo.ConFail_J5 where Tablename ='" . $confail_all[$temp]['TableName'] . "'";
+        $quer_checkifexist = sqlsrv_query($conn_Server, $sql_checkifexist, $params, $options);                          //检查服务器数据库中是否已存在该车号
+        while ($checkifexist = sqlsrv_fetch_array($quer_checkifexist)) {
+            if ($checkifexist['checksum'] == 0) {                                                                       //计数结果为0表示不存在该车号，执行插入操作
+                $sql_insertCon = "insert into dbo.ConFail_J5([TableName],[ConNumber],[StartPsn],[EndPsn],[ConCol],[ConArea])
+            values('" . $confail_all[$temp]['TableName'] . "','" . $confail_all[$temp]['ConNumber'] . "','" . $confail_all[$temp]['StartPsn'] . "','" . $confail_all[$temp]['EndPsn'] . "','" . $confail_all[$temp]['ConCol'] . "','" . $extractCon->returnMacroName($confail_all[$temp]['ConArea']) . "')";
+                $query_instoser = sqlsrv_query($conn_Server, $sql_insertCon, $params, $options);
+            }
+        }
+    }
 }
 extractCon();
+function ExtractTypicalFail(){
+    $extractTyp=new commondate();
+    $lastday=$extractTyp->findlastday();
+    $conn_Jitai=$extractTyp->conn_Jitai;
+    $conn_Server=$extractTyp->conn_Server;
+    $params=$extractTyp->params;
+    $options=$extractTyp->options;
+    $typfail=array();
+    $row=0;
+    $sql_searchindex = "select tablename from dbo.Indextable
+where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
+    $query_searchindex = sqlsrv_query($conn_Jitai, $sql_searchindex, $params, $options);
+    @ $row_count = sqlsrv_num_rows($query_searchindex);
+    if ($row_count === false) {
+        sqlsrv_close($conn_Jitai);
+        exit;
+    } else {
+        while ($row_eachwagon = sqlsrv_fetch_array($query_searchindex)) {
+            $typfail[$row]['TableName']=$row_eachwagon['tablename'];
+            $sql_typfail="select top 3 count(1) as count,FormatPos as pos,MacroIndex as area from  dbo." . $row_eachwagon['tablename'] ."
+where FormatPos!=15 and FormatPos!=8 and FormatPos!=22
+group by FormatPos,MacroIndex
+order by count DESC";
+            $query_typfail = sqlsrv_query($conn_Jitai, $sql_typfail, $params, $options);
+            while($row_typfail = sqlsrv_fetch_array($query_typfail)){
+                $typfail[$row][]=$row_typfail['pos'];
+                $typfail[$row][]=$row_typfail['area'];
+                $typfail[$row][]=$row_typfail['count'];
+            }
+        $row++;
+        }
+    }
+    for($temp=0;$temp<count($typfail);$temp++){
+        $sql_checkifexist = "select count(1) as checksum from dbo.TypicalFail_J5 where Tablename ='" . $typfail[$temp]['TableName'] . "'";
+        $quer_checkifexist = sqlsrv_query($conn_Server, $sql_checkifexist, $params, $options);                          //检查服务器数据库中是否已存在该车号
+        while ($checkifexist = sqlsrv_fetch_array($quer_checkifexist)) {
+            if ($checkifexist['checksum'] == 0) {                                                                       //计数结果为0表示不存在该车号，执行插入操作
+                $sql_insert = "insert into dbo.TypicalFail_J5([TableName],[Max_Pos1],[Max_Area1],[Max_Num1],[Max_Pos2],[Max_Area2],[Max_Num2],[Max_Pos3],[Max_Area3],[Max_Num3])
+            values('".$typfail[$temp]['TableName']."','".$typfail[$temp][0]."','".$extractTyp->returnMacroName($typfail[$temp][1])."','".$typfail[$temp][2]."','".$typfail[$temp][3]."','".$extractTyp->returnMacroName($typfail[$temp][4])."','".$typfail[$temp][5]."','".$typfail[$temp][6]."','".$extractTyp->returnMacroName($typfail[$temp][7])."','".$typfail[$temp][8]."')";
+                $query_instoser = sqlsrv_query($conn_Server, $sql_insert, $params, $options);
+            }
+        }
+    }
+}
+ExtractTypicalFail();
 ?>
