@@ -1,4 +1,4 @@
-﻿<?php
+﻿﻿<?php
 class commondate{
     public $dbHost_Jitai = "localhost";
     public $dbHost_Server = "localhost";
@@ -65,9 +65,6 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     return 0;
     }
 }
-
-
-
 function extractFail()
 {
    $extractdate=new commondate();
@@ -138,12 +135,12 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             if ($checkifexist['checksum'] == 0) {                                                                       //计数结果为0表示不存在该车号，执行插入操作
                 $sql_insertFail = "insert into dbo.Kexin_WY([Tablename],[Createtime],[Totalfail],[Serfail],[Psnnum],[MaxK],[MaxM],[Wangonname])
             values('" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $faillist[$temp][5] . "','" . $faillist[$temp][6] . "','" . $faillist[$temp][7] . "')";
-                $query_instoser = sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
+                sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
             }
         }
     }
 }
-extractFail();
+//extractFail();
 function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在返回列数，不在返回false
     for($i=0;$i<5;$i++)
     {
@@ -231,12 +228,12 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             if ($checkifexist['checksum'] == 0) {                                                                       //计数结果为0表示不存在该车号，执行插入操作
                 $sql_insertCon = "insert into dbo.ConFail_J5([TableName],[ConNumber],[StartPsn],[EndPsn],[ConCol],[ConArea])
             values('" . $confail_all[$temp]['TableName'] . "','" . $confail_all[$temp]['ConNumber'] . "','" . $confail_all[$temp]['StartPsn'] . "','" . $confail_all[$temp]['EndPsn'] . "','" . $confail_all[$temp]['ConCol'] . "','" . $extractCon->returnMacroName($confail_all[$temp]['ConArea']) . "')";
-                $query_instoser = sqlsrv_query($conn_Server, $sql_insertCon, $params, $options);
+                sqlsrv_query($conn_Server, $sql_insertCon, $params, $options);
             }
         }
     }
 }
-extractCon();
+//extractCon();
 function ExtractTypicalFail(){
     $extractTyp=new commondate();
     $lastday=$extractTyp->findlastday();
@@ -255,7 +252,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         exit;
     } else {
         while ($row_eachwagon = sqlsrv_fetch_array($query_searchindex)) {
-            $typfail[$row]['TableName']=$row_eachwagon['tablename'];
+            $typfail[$row]['TableName']=substr($row_eachwagon['tablename'], 1, 7);
             $sql_typfail="select top 3 count(1) as count,FormatPos as pos,MacroIndex as area from  dbo." . $row_eachwagon['tablename'] ."
 where FormatPos!=15 and FormatPos!=8 and FormatPos!=22
 group by FormatPos,MacroIndex
@@ -276,10 +273,9 @@ order by count DESC";
             if ($checkifexist['checksum'] == 0) {                                                                       //计数结果为0表示不存在该车号，执行插入操作
                 $sql_insert = "insert into dbo.TypicalFail_J5([TableName],[Max_Pos1],[Max_Area1],[Max_Num1],[Max_Pos2],[Max_Area2],[Max_Num2],[Max_Pos3],[Max_Area3],[Max_Num3])
             values('".$typfail[$temp]['TableName']."','".$typfail[$temp][0]."','".$extractTyp->returnMacroName($typfail[$temp][1])."','".$typfail[$temp][2]."','".$typfail[$temp][3]."','".$extractTyp->returnMacroName($typfail[$temp][4])."','".$typfail[$temp][5]."','".$typfail[$temp][6]."','".$extractTyp->returnMacroName($typfail[$temp][7])."','".$typfail[$temp][8]."')";
-                $query_instoser = sqlsrv_query($conn_Server, $sql_insert, $params, $options);
+                sqlsrv_query($conn_Server, $sql_insert, $params, $options);
             }
         }
     }
 }
-ExtractTypicalFail();
-?>
+//ExtractTypicalFail();
