@@ -26,7 +26,7 @@ public function find5days()                                                     
     $runningdate=$this->runningdate;
     while (1)
     {
-        $sql_searchdate = "select top 1 count(1) as count from dbo.Kexin_WY where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonname = '" . $wangon . "'
+        $sql_searchdate = "select top 1 count(1) as count from dbo.Kexin_WY where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and MachineId = '" . $wangon . "'
          group by [Id]";
         $query_searchdate = sqlsrv_query($this->conn, $sql_searchdate, $this->params, $this->options);
         while ($row_date = sqlsrv_fetch_array($query_searchdate)) {
@@ -52,24 +52,24 @@ return(0);
 function runsql_singleday($currentdate,$wangon){                                                                       //一日作废统计
     $sql_MaxK = "select top 1 Maxk as maxk ,COUNT(1) as count
 from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonname = '" . $wangon . "'
+where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and MachineId = '" . $wangon . "'
 group by MaxK
 order by count DESC";                                                                                                 //一日报错最多K位
 
     $sql_MaxM = "select top 1 MaxM as maxM ,COUNT(1) as count
 from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonname = '" . $wangon . "'
+where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and MachineId = '" . $wangon . "'
 group by MaxM
 order by count DESC";                                                                                                 //一日报错最多区域
 
     $sql_AVGTotal = "select AVG(Totalfail) as AVGTotal from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonname = '" . $wangon . "'";          //一日报错总数的平均数
+where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and MachineId = '" . $wangon . "'";          //一日报错总数的平均数
 
     $sql_AVGSer = "select AVG(Serfail) as AVGSer from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonname = '" . $wangon . "'";          //一日严重废总数的平均数
+where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and MachineId = '" . $wangon . "'";          //一日严重废总数的平均数
 
     $sql_AVGPsn = "select AVG(Psnnum) as AVGPsn from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonname = '" . $wangon . "'";          //一日三仓总数的平均数
+where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and MachineId = '" . $wangon . "'";          //一日三仓总数的平均数
 
     $singdayresult = array('maxk'=>sqlexec($sql_MaxK, 'maxk'),
         'maxK_count'=>sqlexec($sql_MaxK, 'count'),
@@ -85,24 +85,24 @@ where convert(varchar(10),Createtime,120) = '" . $currentdate . "' and Wangonnam
 function runsql_total($begindate,$enddate,$wangon){                                                                    //一段时间内总体的作废统计
     $sql_MaxK = "select top 1 Maxk as maxk ,COUNT(1) as count
 from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and Wangonname = '" . $wangon . "'
+where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon . "'
 group by MaxK
 order by count DESC";                                                                                                 //五个工作日内报错最多K位
 
     $sql_MaxM = "select top 1 MaxM as maxM ,COUNT(1) as count
 from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and Wangonname = '" . $wangon. "'
+where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon. "'
 group by MaxM
 order by count DESC";                                                                                                 //五个工作日内报错最多区域
 
     $sql_AVGTotal = "select AVG(Totalfail) as AVGTotal from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and Wangonname = '" . $wangon . "'";//五个工作日内报错总数的平均数
+where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon . "'";//五个工作日内报错总数的平均数
 
     $sql_AVGSer = "select AVG(Serfail) as AVGSer from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and Wangonname = '" . $wangon  . "'";//五个工作日内严重废总数的平均数
+where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon  . "'";//五个工作日内严重废总数的平均数
 
     $sql_AVGPsn = "select AVG(Psnnum) as AVGPsn from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and Wangonname = '" . $wangon  . "'";//五个工作日内三仓总数的平均数
+where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon  . "'";//五个工作日内三仓总数的平均数
 
     $totalresult = array('maxk_total'=>sqlexec($sql_MaxK, 'maxk'),
     'maxK_count_totak'=>sqlexec($sql_MaxK, 'count'),
@@ -116,8 +116,8 @@ where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . 
 
 function runsql_eachwangon($begindate,$enddate,$wangon,$conn,$params,$options){
     $j=0;
-    $sql="select Tablename as wangon,Totalfail as totalfail,Serfail as serfail,Psnnum as psnnum,convert(varchar(20),Createtime,120) as createtime from dbo.Kexin_WY
-where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and Wangonname = '" . $wangon . "'
+    $sql="select WangonName as wangon,Totalfail as totalfail,Serfail as serfail,Psnnum as psnnum,convert(varchar(20),Createtime,120) as createtime from dbo.Kexin_WY
+where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon . "'
 order by Createtime";
     $query = sqlsrv_query($conn, $sql, $params, $options);
     while ($row_eachline = sqlsrv_fetch_array($query)) {
