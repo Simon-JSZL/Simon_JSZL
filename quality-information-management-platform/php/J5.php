@@ -155,6 +155,7 @@ function ExtractConFail(){//查找并向服务器端数据库插入连续废
     $extractCon=new commondate();
     $lastday=$extractCon->findlastday();
     $conn_Jitai=$extractCon->conn_Jitai;
+    $conn_Server=$extractCon->conn_Server;
     $params=$extractCon->params;
     $options=$extractCon->options;
     $confail_all[]=array();//用来保存连续废的二维数组
@@ -174,7 +175,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             $confail[0]=array(0,0,0);
             $i=0;
             $count=0;
-            $sql_confail = "select PSN as psn,FormatPos as pos,MacroIndex as area,[Index] as id from dbo." . $row_eachwagon['tablename'] ." order by PSN";
+            $sql_confail = "select PSN as psn,FormatPos as pos,MacroIndex as area,[Index] as Id from dbo." . $row_eachwagon['tablename'] ." order by PSN";
             $query_confail = sqlsrv_query($conn_Jitai, $sql_confail, $params, $options);
             while($row_confail = sqlsrv_fetch_array($query_confail))
             {
@@ -205,22 +206,24 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                         $count=0;
                         $confail[$i]=$row_confail;
                     }
-                    else if($count>=5){
-                        $confail_all[$j++]=array(
+                    else if($count>=5){//符合连续废条件
+                        $confail_all[$j]=array(//插入confail表的作废信息
                             'WangonName'=>substr($row_eachwagon['tablename'], 1, 7),
                             'ConNumber'=>$i+1,
                             'StartPsn'=>$confail[0][0],
                             'EndPsn'=>$confail[$i][0],
                             'ConCol'=>$ConCol,
                             'ConArea'=>$confail[0][2]);
-                        for($temp=0;$temp<count($confail);$temp++) {
-                            $sql_insertImage = "select ErrorImage as image from dbo." . $row_eachwagon['tablename'] . " where [index]=" . $confail[$temp]['Id'];
-                            $query_insertImage = sqlsrv_query($conn_Jitai, $sql_insertImage, $params, $options);
-                            $image = bin2hex(sqlsrv_fetch_array($query_insertImage)['image']);
-                            $confail_imgae[$temp] = array(
-                                'WangonName' => substr($row_eachwagon['tablename'], 1, 7),
-                                'ConImage' => $image);
-                        }
+                        $sql_getImage1 = "select ErrorImage as image from dbo." . $row_eachwagon['tablename'] . " where [index]=" . $confail[0]['Id'];
+                        $query_getImage1 = sqlsrv_query($conn_Jitai, $sql_getImage1, $params, $options);
+                        $image1 = bin2hex(sqlsrv_fetch_array($query_getImage1)['image']);
+                        $sql_getImage2 = "select ErrorImage as image from dbo." . $row_eachwagon['tablename'] . " where [index]=" . $confail[count($confail)-1]['Id'];
+                        $query_getImage2 = sqlsrv_query($conn_Jitai, $sql_getImage2, $params, $options);
+                        $image2 = bin2hex(sqlsrv_fetch_array($query_getImage2)['image']);
+                        $confail_image[$j]=array(
+                            'ConImage1'=>$image1,
+                            'ConImage2'=>$image2);
+                        $j++;
                         unset($confail);
                         $i=0;
                         $count=0;
@@ -233,7 +236,16 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     for($temp=0;$temp<count($confail_all);$temp++){
         $sql_insertCon = "insert into dbo.ConFail_J5([WangonName],[ConNumber],[StartPsn],[EndPsn],[ConCol],[ConArea])
 values('" . $confail_all[$temp]['WangonName'] . "','" . $confail_all[$temp]['ConNumber'] . "','" . $confail_all[$temp]['StartPsn'] . "','" . $confail_all[$temp]['EndPsn'] . "','" . $confail_all[$temp]['ConCol'] . "','" . $extractCon->returnMacroName($confail_all[$temp]['ConArea']) . "')";
-        $extractCon->checkIfExist($confail_all,'ConFail_J5',$sql_insertCon,$temp);
+        $sql_insertImage="insert into dbo.ConImage_J5([ImageId],[ConImage1],[ConImage2])
+values(@@IDENTITY,'".$confail_image[$temp]['ConImage1']."','".$confail_image[$temp]['ConImage2']."')";
+        $sql_checkifexist = "select count(1) as checksum from dbo.ConFail_J5 where WangonName ='".$confail_all[$temp]['WangonName']."' and StartPsn = '".$confail_all[$temp]['StartPsn']."' and EndPsn = '".$confail_all[$temp]['EndPsn']."'";
+        $query_checkifexist = sqlsrv_query($conn_Server, $sql_checkifexist, $params, $options);
+        while ($checkifexist = sqlsrv_fetch_array($query_checkifexist)) {
+            if ($checkifexist['checksum'] == 0) {
+                sqlsrv_query($conn_Server, $sql_insertCon, $params, $options);
+                sqlsrv_query($conn_Server, $sql_insertImage, $params, $options);
+            }
+        }
     }
 }
 
@@ -241,7 +253,6 @@ function ExtractTypicalFail(){
     $extractTyp=new commondate();
     $lastday=$extractTyp->findlastday();
     $conn_Jitai=$extractTyp->conn_Jitai;
-    $conn_Server=$extractTyp->conn_Server;
     $params=$extractTyp->params;
     $options=$extractTyp->options;
     $typfail=array();
