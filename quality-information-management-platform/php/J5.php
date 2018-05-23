@@ -64,14 +64,15 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         }
     return 0;
     }
-    public function checkIfExist($checkArr,$tableName,$sql,$temp){
+    public function checkIfExist($checkArr,$tableName,$temp){
         $sql_checkifexist = "select count(1) as checksum from dbo.".$tableName." where WangonName ='".$checkArr[$temp]['WangonName']."'";
         $query_checkifexist = sqlsrv_query($this->conn_Server, $sql_checkifexist, $this->params, $this->options);
         while ($checkifexist = sqlsrv_fetch_array($query_checkifexist)) {
             if ($checkifexist['checksum'] == 0) {
-                sqlsrv_query($this->conn_Server, $sql, $this->params, $this->options);
+                return true;
             }
         }
+    return false;
     }
 }
 function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在返回列数，不在返回false
@@ -87,6 +88,7 @@ function ExtractComFail()
    $extractdate=new commondate();
    $lastday=$extractdate->findlastday();
    $conn_Jitai=$extractdate->conn_Jitai;
+   $conn_Server=$extractdate->conn_Server;
    $params=$extractdate->params;
    $options=$extractdate->options;
    $faillist[]=array();
@@ -147,7 +149,8 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     for ($temp = 0; $temp < $i; $temp++) {
         $sql_insertFail = "insert into dbo.Kexin_WY([WangonName],[Createtime],[Totalfail],[Serfail],[Psnnum],[MaxK],[MaxM],[MachineId])
 values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $faillist[$temp][5] . "','" . $faillist[$temp][6] . "')";
-        $extractdate->checkIfExist($faillist,'Kexin_WY',$sql_insertFail,$temp);
+        if($extractdate->checkIfExist($faillist,'Kexin_WY',$temp)==true)
+            sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
     }
 }
 
@@ -160,7 +163,6 @@ function ExtractConFail(){//查找并向服务器端数据库插入连续废
     $options=$extractCon->options;
     $confail_all[]=array();//用来保存连续废的二维数组
     $j=0;
-    $k=0;
     $ConCol=0;//连续废所在的列
     $sql_searchindex = "select tablename from dbo.Indextable
 where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
@@ -253,9 +255,11 @@ function ExtractTypicalFail(){
     $extractTyp=new commondate();
     $lastday=$extractTyp->findlastday();
     $conn_Jitai=$extractTyp->conn_Jitai;
+    $conn_Server=$extractTyp->conn_Server;
     $params=$extractTyp->params;
     $options=$extractTyp->options;
     $typfail=array();
+    $typimage=array();
     $row=0;
     $sql_searchindex = "select tablename from dbo.Indextable
 where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
@@ -267,6 +271,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     } else {
         while ($row_eachwagon = sqlsrv_fetch_array($query_searchindex)) {
             $typfail[$row]['WangonName']=substr($row_eachwagon['tablename'], 1, 7);
+            $typimage[$row]['WangonName']=substr($row_eachwagon['tablename'], 1, 7);
             $sql_typfail="select top 3 count(1) as count,FormatPos as pos,MacroIndex as area from  dbo." . $row_eachwagon['tablename'] ."
 where FormatPos!=15 and FormatPos!=8 and FormatPos!=22
 group by FormatPos,MacroIndex
@@ -276,6 +281,11 @@ order by count DESC";
                 $typfail[$row][]=$row_typfail['pos'];
                 $typfail[$row][]=$row_typfail['area'];
                 $typfail[$row][]=$row_typfail['count'];
+                $sql_getimage="select top 1 ErrorImage as image from dbo." . $row_eachwagon['tablename'] ."
+            where FormatPos = ".$row_typfail['pos']." and MacroIndex = ".$row_typfail['area']."
+            order by Reserve3 DESC";
+                $query_getImage= sqlsrv_query($conn_Jitai, $sql_getimage, $params, $options);
+                $typimage[$row][]=bin2hex(sqlsrv_fetch_array($query_getImage)['image']);
             }
         $row++;
         }
@@ -283,7 +293,12 @@ order by count DESC";
     for($temp=0;$temp<count($typfail);$temp++){
         $sql_insertTyp = "insert into dbo.TypicalFail_J5([WangonName],[Max_Pos1],[Max_Area1],[Max_Num1],[Max_Pos2],[Max_Area2],[Max_Num2],[Max_Pos3],[Max_Area3],[Max_Num3])
 values('".$typfail[$temp]['WangonName']."','".$typfail[$temp][0]."','".$extractTyp->returnMacroName($typfail[$temp][1])."','".$typfail[$temp][2]."','".$typfail[$temp][3]."','".$extractTyp->returnMacroName($typfail[$temp][4])."','".$typfail[$temp][5]."','".$typfail[$temp][6]."','".$extractTyp->returnMacroName($typfail[$temp][7])."','".$typfail[$temp][8]."')";
-        $extractTyp->checkIfExist($typfail,'TypicalFail_J5',$sql_insertTyp,$temp);
+        $sql_insertImage="insert into dbo.TypicalImage_J5([WangonName],[TypImage1],[TypImage2],[TypImage3])
+values ('".$typimage[$temp]['WangonName']."','".$typimage[$temp][0]."','".$typimage[$temp][1]."','".$typimage[$temp][2]."')";
+        //if($extractTyp->checkIfExist($typfail,'TypicalFail_J5',$temp)==true)
+            sqlsrv_query($conn_Server, $sql_insertTyp, $params, $options);
+        //if($extractTyp->checkIfExist($typimage,'TypicalImage_J5',$temp)==true)
+            sqlsrv_query($conn_Server, $sql_insertImage, $params, $options);
     }
 }
 ExtractComFail();

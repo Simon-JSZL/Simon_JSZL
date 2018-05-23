@@ -116,6 +116,7 @@ where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . 
 
 function runsql_eachwangon($begindate,$enddate,$wangon,$conn,$params,$options){
     $j=0;
+    $arr=array();
     $sql="select WangonName as wangon,Totalfail as totalfail,Serfail as serfail,Psnnum as psnnum,convert(varchar(20),Createtime,120) as createtime from dbo.Kexin_WY
 where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "' and MachineId = '" . $wangon . "'
 order by Createtime";
@@ -142,6 +143,7 @@ function fivedaycount_total(){
 
 function fivedaycount_singleday(){
     $totalcount= new Totalcount();
+    $fivedaydetail=array();
     $fiveday=$totalcount->find5days();
     $arraylength=count($fiveday)-1;
     $wangon=$totalcount->wangon;
@@ -169,4 +171,4 @@ $singleresult=fivedaycount_singleday();
 $eachwangonresult=fivedaycount_eachwangon();
 $result=array("TotalResult"=>$totalresult) + array("SingleResult"=>$singleresult)+array("EachWangonResult"=>$eachwangonresult);
 echo json_encode($result);
-?>
+
