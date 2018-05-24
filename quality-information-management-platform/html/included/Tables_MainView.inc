@@ -1,11 +1,11 @@
 <script>
            $(document).ready(function() {
-               var wangon=document.cookie;
+               var machineId=document.cookie;
                $.ajax({
                    url: '../php/MainView_Counting.php',
                    type: 'GET',
                    dataType: 'JSON',
-                   data: {"wangon":wangon},
+                   data: {"machineId":machineId},
                    success: function(data){
                        document.getElementById("tablehead_totaldate_start").innerText=data.SingleResult[0].CurrentDate;
                        document.getElementById("tablehead_totaldate_end").innerText=data.SingleResult[4].CurrentDate;

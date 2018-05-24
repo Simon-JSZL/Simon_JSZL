@@ -16,8 +16,12 @@ class commondate{
     public $connectionInfo_Server;
     public $params = array();
     public $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+    public $macroTable;
+    public $machineId;
     public function  __construct()
     {
+        $this->machineId = 'J5';
+        $this->macroTable = 'dbo.ModelMacroLog_339';
         $this->currentdate = date("Y-m-d", strtotime("-1 day"));                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
@@ -56,13 +60,13 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         return $lastday;
     }
     public function returnMacroName($MacroId){//返回宏区域名称
-        $sql = "select top 1 MacroTitle as MacroName from dbo.ModelMacroLog_339
+        $sql = "select top 1 MacroTitle as MacroName from ".$this->macroTable."
                   where MacroID=".$MacroId;
         $query = sqlsrv_query($this->conn_Jitai, $sql, $this->params, $this->options);
         while ($row = sqlsrv_fetch_array($query)) {
             return $row['MacroName'];
         }
-    return 0;
+    return $MacroId;
     }
     public function checkIfExist($checkArr,$tableName,$temp){
         $sql_checkifexist = "select count(1) as checksum from dbo.".$tableName." where WangonName ='".$checkArr[$temp]['WangonName']."'";
@@ -102,55 +106,42 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     } else {
         $i = 0;
         while ($row_eachwagon = sqlsrv_fetch_array($query_searchindex)) {
-            $tablename_short = substr($row_eachwagon['tablename'], 1, 7);                                 //车号
-            $faillist[$i]['WangonName'] = $tablename_short;
-
-            $PrintData = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');                                           //印刷时间
-            $faillist[$i][] = $PrintData;
-
             $sql_total = "select COUNT(1) as count from dbo." . $row_eachwagon['tablename'];                          //报废总数
-            $query_total = sqlsrv_query($conn_Jitai, $sql_total, $params, $options);
-            while ($row_total = sqlsrv_fetch_array($query_total)) {
-                $faillist[$i][] = $row_total['count'];
-            }
-
             $sql_ser = "select COUNT(1) as count from dbo." . $row_eachwagon['tablename'] . " where Reserve2=2";     //报出严重废总数
-            $query_ser = sqlsrv_query($conn_Jitai, $sql_ser, $params, $options);
-            while ($row_ser = sqlsrv_fetch_array($query_ser)) {
-                $faillist[$i][] = $row_ser['count'];
-            }
-
             $sql_psn = "select count(distinct PSN) as psnnum from dbo." . $row_eachwagon['tablename'] . " where Reserve2=2";//打仓数
-            $query_psn = sqlsrv_query($conn_Jitai, $sql_psn, $params, $options);
-            while ($row_psn = sqlsrv_fetch_array($query_psn)) {
-                $faillist[$i][] = $row_psn['psnnum'];
-            }
-
             $sql_maxk = "select top 1 FormatPos,COUNT(*) as count from dbo." . $row_eachwagon['tablename'] . "       
                   group by FormatPos
                   order by count DESC";//作废最多K位
-            $query_maxk = sqlsrv_query($conn_Jitai, $sql_maxk, $params, $options);
-            while ($row_maxk = sqlsrv_fetch_array($query_maxk)) {
-                $faillist[$i][] = $row_maxk['FormatPos'];
-            }
-
-            $sql_maxM = "select top 1 MacroTitle from dbo.ModelMacroLog_339
-                  where MacroID=(select top 1 MacroIndex from dbo." . $row_eachwagon['tablename'] . "
+            $sql_maxM = "select top 1 MacroIndex as MacroId from dbo." . $row_eachwagon['tablename'] . "
                   group by MacroIndex
-                  order by count(*) DESC)";//作废最多区域
+                  order by count(*) DESC";//作废最多区域
+            $query_total = sqlsrv_query($conn_Jitai, $sql_total, $params, $options);
+            $query_ser = sqlsrv_query($conn_Jitai, $sql_ser, $params, $options);
+            $query_psn = sqlsrv_query($conn_Jitai, $sql_psn, $params, $options);
+            $query_maxk = sqlsrv_query($conn_Jitai, $sql_maxk, $params, $options);
             $query_maxM = sqlsrv_query($conn_Jitai, $sql_maxM, $params, $options);
-            while ($row_maxM = sqlsrv_fetch_array($query_maxM)) {
-                $faillist[$i][] = $row_maxM['MacroTitle'];
-            }
-            $faillist[$i][] = 'J5';
-            $i = $i + 1;
+            $faillist[$i]['WangonName'] = substr($row_eachwagon['tablename'], 1, 7);
+            $faillist[$i][] = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');
+            $faillist[$i][] = sqlsrv_fetch_array($query_total)['count'];
+            $faillist[$i][] = sqlsrv_fetch_array($query_ser)['count'];
+            $faillist[$i][] = sqlsrv_fetch_array($query_psn)['psnnum'];
+            $faillist[$i][] = sqlsrv_fetch_array($query_maxk)['FormatPos'];
+            $faillist[$i][] = sqlsrv_fetch_array($query_maxM)['MacroId'];
+            $index[$i]['WangonName'] = substr($row_eachwagon['tablename'], 1, 7);
+            $index[$i][] = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');
+            $index[$i][] = $extractdate->machineId;
+            $i++;
         }
     }
-    for ($temp = 0; $temp < $i; $temp++) {
-        $sql_insertFail = "insert into dbo.Kexin_WY([WangonName],[Createtime],[Totalfail],[Serfail],[Psnnum],[MaxK],[MaxM],[MachineId])
-values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $faillist[$temp][5] . "','" . $faillist[$temp][6] . "')";
-        if($extractdate->checkIfExist($faillist,'Kexin_WY',$temp)==true)
+    for ($temp = 0; $temp < count($faillist); $temp++) {
+        $sql_insertFail = "insert into dbo.GeneralFail_".$extractdate->machineId."([WangonName],[CreateTime],[TotalFail],[SerFail],[PsnNum],[MaxK],[MaxM])
+values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $extractdate->returnMacroName($faillist[$temp][5]) . "')";
+        $sql_insertIndex = "insert into dbo.AllIndex([WangonName],[CreateTime],[MachinId])
+values('".$index[$temp]['WangonName']."','".$index[$temp][0]."','".$index[$temp][1]."')";
+        if($extractdate->checkIfExist($faillist,"GeneralFail_".$extractdate->machineId,$temp)==true)
             sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
+        if($extractdate->checkIfExist($index,"AllIndex",$temp)==true)
+            sqlsrv_query($conn_Server, $sql_insertIndex, $params, $options);
     }
 }
 
@@ -236,11 +227,11 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         }
     }
     for($temp=0;$temp<count($confail_all);$temp++){
-        $sql_insertCon = "insert into dbo.ConFail_J5([WangonName],[ConNumber],[StartPsn],[EndPsn],[ConCol],[ConArea])
+        $sql_insertCon = "insert into dbo.ConFail_".$extractCon->machineId."([WangonName],[ConNumber],[StartPsn],[EndPsn],[ConCol],[ConArea])
 values('" . $confail_all[$temp]['WangonName'] . "','" . $confail_all[$temp]['ConNumber'] . "','" . $confail_all[$temp]['StartPsn'] . "','" . $confail_all[$temp]['EndPsn'] . "','" . $confail_all[$temp]['ConCol'] . "','" . $extractCon->returnMacroName($confail_all[$temp]['ConArea']) . "')";
-        $sql_insertImage="insert into dbo.ConImage_J5([ImageId],[ConImage1],[ConImage2])
+        $sql_insertImage="insert into dbo.ConImage_".$extractCon->machineId."([ImageId],[ConImage1],[ConImage2])
 values(@@IDENTITY,'".$confail_image[$temp]['ConImage1']."','".$confail_image[$temp]['ConImage2']."')";
-        $sql_checkifexist = "select count(1) as checksum from dbo.ConFail_J5 where WangonName ='".$confail_all[$temp]['WangonName']."' and StartPsn = '".$confail_all[$temp]['StartPsn']."' and EndPsn = '".$confail_all[$temp]['EndPsn']."'";
+        $sql_checkifexist = "select count(1) as checksum from dbo.ConFail_".$extractCon->machineId." where WangonName ='".$confail_all[$temp]['WangonName']."' and StartPsn = '".$confail_all[$temp]['StartPsn']."' and EndPsn = '".$confail_all[$temp]['EndPsn']."'";
         $query_checkifexist = sqlsrv_query($conn_Server, $sql_checkifexist, $params, $options);
         while ($checkifexist = sqlsrv_fetch_array($query_checkifexist)) {
             if ($checkifexist['checksum'] == 0) {
@@ -291,13 +282,11 @@ order by count DESC";
         }
     }
     for($temp=0;$temp<count($typfail);$temp++){
-        $sql_insertTyp = "insert into dbo.TypicalFail_J5([WangonName],[Max_Pos1],[Max_Area1],[Max_Num1],[Max_Pos2],[Max_Area2],[Max_Num2],[Max_Pos3],[Max_Area3],[Max_Num3])
+        $sql_insertTyp = "insert into dbo.TypicalFail_".$extractTyp->machineId."([WangonName],[Max_Pos1],[Max_Area1],[Max_Num1],[Max_Pos2],[Max_Area2],[Max_Num2],[Max_Pos3],[Max_Area3],[Max_Num3])
 values('".$typfail[$temp]['WangonName']."','".$typfail[$temp][0]."','".$extractTyp->returnMacroName($typfail[$temp][1])."','".$typfail[$temp][2]."','".$typfail[$temp][3]."','".$extractTyp->returnMacroName($typfail[$temp][4])."','".$typfail[$temp][5]."','".$typfail[$temp][6]."','".$extractTyp->returnMacroName($typfail[$temp][7])."','".$typfail[$temp][8]."')";
-        $sql_insertImage="insert into dbo.TypicalImage_J5([WangonName],[TypImage1],[TypImage2],[TypImage3])
+        $sql_insertImage="insert into dbo.TypicalImage_".$extractTyp->machineId."([WangonName],[TypImage1],[TypImage2],[TypImage3])
 values ('".$typimage[$temp]['WangonName']."','".$typimage[$temp][0]."','".$typimage[$temp][1]."','".$typimage[$temp][2]."')";
-        //if($extractTyp->checkIfExist($typfail,'TypicalFail_J5',$temp)==true)
             sqlsrv_query($conn_Server, $sql_insertTyp, $params, $options);
-        //if($extractTyp->checkIfExist($typimage,'TypicalImage_J5',$temp)==true)
             sqlsrv_query($conn_Server, $sql_insertImage, $params, $options);
     }
 }
