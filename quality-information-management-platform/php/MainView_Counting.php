@@ -19,7 +19,6 @@ class Totalcount                                                                
 }
 public function find5days()                                                                                           //查找最近的五个工作日的日期
 {
-    $i = 0;
     $back5days=0;
     $currentdate=$this->startdate;
     $machineId=$this->machineId;
@@ -28,14 +27,12 @@ public function find5days()                                                     
     {
         $sql_searchdate = "select top 1 count(1) as count from dbo.GeneralFail_".$machineId." where convert(varchar(10),Createtime,120) = '" . $currentdate . "'";
         $query_searchdate = sqlsrv_query($this->conn, $sql_searchdate, $this->params, $this->options);
-        while ($row_date = sqlsrv_fetch_array($query_searchdate)) {
-            if ($row_date['count'] != 0) {
-                $back5days++;
-                $runningdate[$i++] = $currentdate;
-            }
-         }
-    $currentdate= date("Y-m-d", (strtotime($currentdate) - 3600 * 24));
-    if (($back5days >= 5)||($currentdate == '2012-04-10'))
+        if (sqlsrv_fetch_array($query_searchdate)['count'] != 0) {
+            $back5days++;
+            $runningdate[] = $currentdate;
+        }
+    $currentdate= date("Y-m-d", (strtotime($currentdate."-1 day")));
+    if (($back5days >= 5)||($currentdate == '2014-04-10'))
     break;
     }
     return $runningdate;//倒序:[arr0 => 2018-04-25,arr1=>2018-04-24...]

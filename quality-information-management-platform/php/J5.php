@@ -22,7 +22,8 @@ class commondate{
     {
         $this->machineId = 'J5';
         $this->macroTable = 'dbo.ModelMacroLog_339';
-        $this->currentdate = date("Y-m-d", strtotime("-1 day"));                                          //获取前一天日期
+        $this->currentdate = date("Y-m-d", strtotime("-1 day"));
+        //$this->currentdate = '2014-06-22';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->conn_Jitai=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_Jitai);
@@ -49,7 +50,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             $query_searchlastday = sqlsrv_query($this->conn_Jitai, $sql_searchlastday, $this->params, $this->options);
             while ($row_lastday = sqlsrv_fetch_array($query_searchlastday)) {
                 if ($row_lastday['count'] == 0) {
-                $lastday = date("Y-m-d", (strtotime($lastday) - 3600 * 24));
+                $lastday = date("Y-m-d", (strtotime($lastday."-1 day")));
             }
             else if($row_lastday['count']!=0)
                 $count++;
