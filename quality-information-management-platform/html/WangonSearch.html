@@ -13,7 +13,12 @@ include ('./common/header.html');
 				</li>
 				<li><a href="#">车号查询</a></li>
 			</ul>
-           
+		<div class="input-group">
+			<form action="WangonSearch.php" method="post" class="form-search">
+				<input class="input-xxlarge search-query" type="largesearch" placeholder="输入车号" name="WangonName">
+				<button class="btn btn-large btn-primary" type="submit">查询</button>
+			</form>
+		</div>
 	</div><!-- end of content -->
 <?php
 include ('./footer/footer_WangonSearch.html');
