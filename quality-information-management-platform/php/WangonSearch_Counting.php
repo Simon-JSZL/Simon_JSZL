@@ -61,13 +61,14 @@ where WangonName='".$ConFail->wangonName."'";
 from dbo.ConImage_".$ConFail->machineId."
 where ImageId=".$row['ImageId'];
             $query_image=$ConFail->returnQuery($sql_image);
+            $row_image=sqlsrv_fetch_array($query_image);
             $ConResult[] = array("ConNum"=>$row['ConNum'],
                 "StartPsn"=>$row['StartPsn'],
                 "EndPsn"=>$row['EndPsn'],
                 "ConArea"=>$row['ConArea'],
                 "ConCol"=>$row['ConCol'],
-                "Image1"=>base64_encode(hex2bin($header.(sqlsrv_fetch_array($query_image)['Image1']))),
-                "Image2"=>base64_encode(hex2bin($header.(sqlsrv_fetch_array($query_image)['Image2'])))
+                "Image1"=>base64_encode(hex2bin($header.($row_image['Image1']))),
+                "Image2"=>base64_encode(hex2bin($header.($row_image['Image2'])))
             );
         }
     }

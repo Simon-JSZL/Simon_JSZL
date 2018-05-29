@@ -21,6 +21,7 @@
                     for(let i=1;i<=(data.ConFail).length;i++)
                     {
                         document.getElementById("testimage"+i).src="data:image/bmp;base64,"+data.ConFail[i-1].Image1;
+                        document.getElementById("conimage"+i).src="data:image/bmp;base64,"+data.ConFail[i-1].Image2;
                     }
                 }
             },
