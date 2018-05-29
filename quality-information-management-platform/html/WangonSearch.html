@@ -2,7 +2,7 @@
 <html>
 <?php
 include ('./common/header.html');
-?>		
+?>
 	<!-- start: Content -->
 	<div id="content" class="span10">	
 			 <ul class="breadcrumb">
@@ -14,10 +14,34 @@ include ('./common/header.html');
 				<li><a href="#">车号查询</a></li>
 			</ul>
 		<div class="input-group">
-			<form action="WangonSearch.php" method="post" class="form-search">
-				<input class="input-xxlarge search-query" type="largesearch" placeholder="输入车号" name="WangonName">
-				<button class="btn btn-large btn-primary" type="submit">查询</button>
-			</form>
+				<input class="input-xxlarge search-query" type="largesearch" placeholder="输入车号" id="WangonName">
+				<button class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value)">查询</button>
+		</div>
+		<div id="generalfail">
+			<span id="TotalFail"></span>
+			<span id="SerFail"></span>
+			<span id="PsnNum"></span>
+			<span id="MaxK"></span>
+			<span id="MaxM"></span>
+		</div>
+		<div id="confail">
+			<span id="ConNum"></span>
+			<img id="testimage1">
+			<img id="testimage2">
+			<img id="testimage3">
+			<img id="testimage4">
+			<img id="testimage5">
+			<img id="testimage6">
+			<img id="testimage7">
+			<img id="testimage8">
+			<img id="testimage9">
+			<img id="testimage10">
+			<img id="testimage11">
+			<img id="testimage12">
+			<img id="testimage13">
+			<img id="testimage14">
+
+
 		</div>
 	</div><!-- end of content -->
 <?php
