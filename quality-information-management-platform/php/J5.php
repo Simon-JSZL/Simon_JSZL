@@ -22,8 +22,8 @@ class commondate{
     {
         $this->machineId = 'J5';
         $this->macroTable = 'dbo.ModelMacroLog_339';
-        $this->currentdate = date("Y-m-d", strtotime("-1 day"));
-        //$this->currentdate = '2014-06-22';                                          //获取前一天日期
+        //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
+        $this->currentdate = '2014-06-20';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->conn_Jitai=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_Jitai);
@@ -43,6 +43,7 @@ class commondate{
     {
         $count=0;
         $lastday=$this->currentdate;
+        $stopdate=strtotime("2014-4-10 00:00:00");
         while(1)
         {
             $sql_searchlastday = "select count(1) as count from dbo.Indextable
@@ -55,7 +56,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             else if($row_lastday['count']!=0)
                 $count++;
             }
-        if($count>0)
+        if($count>0||(strtotime($lastday)<$stopdate))
             break;
         }
         return $lastday;
@@ -123,11 +124,16 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             $query_maxM = sqlsrv_query($conn_Jitai, $sql_maxM, $params, $options);
             $faillist[$i]['WangonName'] = substr($row_eachwagon['tablename'], 1, 7);
             $faillist[$i][] = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');
-            $faillist[$i][] = sqlsrv_fetch_array($query_total)['count'];
-            $faillist[$i][] = sqlsrv_fetch_array($query_ser)['count'];
-            $faillist[$i][] = sqlsrv_fetch_array($query_psn)['psnnum'];
-            $faillist[$i][] = sqlsrv_fetch_array($query_maxk)['FormatPos'];
-            $faillist[$i][] = sqlsrv_fetch_array($query_maxM)['MacroId'];
+            $row_total=sqlsrv_fetch_array($query_total);
+            $row_ser=sqlsrv_fetch_array($query_ser);
+            $row_psn=sqlsrv_fetch_array($query_psn);
+            $row_maxk=sqlsrv_fetch_array($query_maxk);
+            $row_maxM=sqlsrv_fetch_array($query_maxM);
+            $faillist[$i][] = $row_total['count'];
+            $faillist[$i][] = $row_ser['count'];
+            $faillist[$i][] = $row_psn['psnnum'];
+            $faillist[$i][] = $row_maxk['FormatPos'];
+            $faillist[$i][] = $row_maxM['MacroId'];
             $index[$i]['WangonName'] = substr($row_eachwagon['tablename'], 1, 7);
             $index[$i][] = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');
             $index[$i][] = $extractdate->machineId;
@@ -136,8 +142,8 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
     }
     for ($temp = 0; $temp < count($faillist); $temp++) {
         $sql_insertFail = "insert into dbo.GeneralFail_".$extractdate->machineId."([WangonName],[CreateTime],[TotalFail],[SerFail],[PsnNum],[MaxK],[MaxM])
-values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $extractdate->returnMacroName($faillist[$temp][5]) . "')";
-        $sql_insertIndex = "insert into dbo.AllIndex([WangonName],[CreateTime],[MachinId])
+values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . trim($extractdate->returnMacroName($faillist[$temp][5])) . "')";
+        $sql_insertIndex = "insert into dbo.AllIndex([WangonName],[CreateTime],MachineId)
 values('".$index[$temp]['WangonName']."','".$index[$temp][0]."','".$index[$temp][1]."')";
         if($extractdate->checkIfExist($faillist,"GeneralFail_".$extractdate->machineId,$temp)==true)
             sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
@@ -194,13 +200,13 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                     }
                 }
                 else if($confail[$i][0]+3<$row_confail['psn']){
-                    if($count<5){
+                    if($count<10){
                         unset($confail);
                         $i=0;
                         $count=0;
                         $confail[$i]=$row_confail;
                     }
-                    else if($count>=5){//符合连续废条件
+                    else if($count>=10){//符合连续废条件
                         $confail_all[$j]=array(//插入confail表的作废信息
                             'WangonName'=>substr($row_eachwagon['tablename'], 1, 7),
                             'ConNumber'=>$i+1,

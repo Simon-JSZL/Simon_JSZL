@@ -103,7 +103,7 @@ where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . 
 where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "'";//五个工作日内三仓总数的平均数
 
     $totalresult = array('maxk_total'=>sqlexec($sql_MaxK, 'maxk'),
-    'maxK_count_totak'=>sqlexec($sql_MaxK, 'count'),
+    'maxK_count_total'=>sqlexec($sql_MaxK, 'count'),
     'maxM_total'=>sqlexec($sql_MaxM, 'maxM'),
     'maxM_count_total'=>sqlexec($sql_MaxM, 'count'),
     'AVGTotal_total'=>sqlexec($sql_AVGTotal, 'AVGTotal'),

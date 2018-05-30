@@ -17,29 +17,50 @@ include ('./common/header.html');
 				<input class="input-xxlarge search-query" type="largesearch" placeholder="输入车号" id="WangonName">
 				<button class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value)">查询</button>
 		</div>
-		<div id="generalfail">
-			<span id="TotalFail"></span>
-			<span id="SerFail"></span>
-			<span id="PsnNum"></span>
-			<span id="MaxK"></span>
-			<span id="MaxM"></span>
+		<div class="row-fluid">
+			<div class="span12 statbox-extendheader blue noMargin" onTablet="span12" onDesktop="span12">
+				<div class="text-center"><strong>基本信息</strong></div>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+				<tr>
+					<th class="text-center">印刷机台</th>
+					<th class="text-center">印刷时间</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td id="MachineId" class="text-center"></td>
+					<td id="CreateTime" class="text-center"></td>
+				</tr>
+				</tbody>
+			</table>
 		</div>
-		<div id="confail">
-			<span id="ConNum"></span>
-			<img id="testimage1"><br/>
-			<img id="testimage2"><br/>
-			<img id="testimage3"><br/>
-			<img id="testimage4"><br/>
-			<img id="testimage5"><br/>
-			<img id="testimage6"><br/>
-			<img id="testimage7"><br/>
-			<img id="conimage1"><br/>
-			<img id="conimage2"><br/>
-			<img id="conimage3"><br/>
-			<img id="conimage4"><br/>
-			<img id="conimage5"><br/>
-			<img id="conimage6"><br/>
-			<img id="conimage7"><br/>
+		<div class="row-fluid">
+			<div class="span12 statbox-extendheader blue noMargin" onTablet="span12" onDesktop="span12">
+				<div class="text-center"><strong>基本信息</strong></div>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+				<tr>
+					<th class="text-center">作废总数</th>
+					<th class="text-center">严重废数</th>
+					<th class="text-center">三仓数</th>
+					<th class="text-center">作废最多区域</th>
+					<th class="text-center">作废最多K位</th>
+
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td id="TotalFail" class="text-center"></td>
+					<td id="SerFail" class="text-center"></td>
+					<td id="PsnNum" class="text-center"></td>
+					<td id="MaxM" class="text-center"></td>
+					<td id="MaxK" class="text-center"></td>
+				</tr>
+				</tbody>
+			</table>
 		</div>
 	</div><!-- end of content -->
 <?php
