@@ -3,14 +3,13 @@
 =================================================================== */
 @import url("jquery-ui-1.8.21.custom.css");								/* jQuery User Interface Framework Styles */
 @import url("fullcalendar.css");										/* Calendars Styles */
-@import url("chosen.css");												/* Select Boxes Styles */  
+@import url("chosen.css");												/* Select Boxes Styles */
 @import url("uniform.default.css");										/* Uniform Styles */
-@import url("jquery.cleditor.css");										/* Text Editor Styles. */  
+@import url("jquery.cleditor.css");										/* Text Editor Styles. */
 @import url("jquery.noty.css");											/* Noty Notifications Style */
 @import url("noty_theme_default.css");									/* Noty Notifications Style */
 @import url("elfinder.min.css");										/* File Manager Style */
 @import url("elfinder.theme.css");										/* File Manager Style */
-@import url("jquery.iphone.toggle.css");								/* Styles for iPhone */
 @import url("uploadify.css");											/* Uploadify Styles */
 @import url("jquery.gritter.css");										/* Growl Like Notifications Styles */
 @import url("font-awesome.min.css");									/* Font Awesome Styles */
@@ -723,7 +722,6 @@ ul.messages li .message {
 		top: 50px;
 		left: 10px;
 }
-
 .breadcrumb span {
 	text-shadow: 1px 1px 0px #fff;
 }
@@ -3008,4 +3006,9 @@ ul.messagesList li span.date {
 }
 .navbar .brand{
 	font-size: 35px;
+}
+#WangonName{
+	height: 43.6px;
+	padding: 11px 14px;
+	font-size: 16px;
 }

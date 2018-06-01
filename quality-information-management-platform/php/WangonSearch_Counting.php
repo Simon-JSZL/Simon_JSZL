@@ -82,7 +82,12 @@ function returnMachineInfo($WangonName){
     $row=sqlsrv_fetch_array($query);
     $MachineId=$row['MachineId'];
     $CreateTime=$row['CreateTime'];
-    $Info = array("MachineId"=>trim($MachineId),"CreateTime"=>$CreateTime);
+    $sql_machineInfo="select SideId as SideId,ProductId as ProductId from dbo.MachineInfo where MachineId = '".$MachineId."'";
+    $query_machineInfo=$returnMachineId->returnQuery($sql_machineInfo);
+    $row_machineInfo=sqlsrv_fetch_array($query_machineInfo);
+    $SideId=$row_machineInfo['SideId'];
+    $ProductId=$row_machineInfo['ProductId'];
+    $Info = array("MachineId"=>trim($MachineId),"CreateTime"=>$CreateTime,"SideId"=>$SideId,"ProductId"=>$ProductId);
     return $Info;
 }
 
@@ -96,8 +101,10 @@ function returnData(){
         echo json_encode($result);
     }
     else {
-        $CreateTime=$Info['CreateTime']->format('Y/m/d H:i:s');
-        $WangonInfo=array("MachineId"=>$MachineId,"CreateTime"=>$CreateTime);
+        $CreateTime=$Info['CreateTime']->format('Y/m/d H:i');
+        $SideId=$Info['SideId'];
+        $ProductId=$Info['ProductId'];
+        $WangonInfo=array("MachineId"=>$MachineId,"CreateTime"=>$CreateTime,"SideId"=>$SideId,"ProductId"=>$ProductId);
         $GeneralFail = generalfail($MachineId,$WangonName);
         $ConFail = confail($MachineId,$WangonName);
         $result = array("WangonInfo"=>$WangonInfo)+array("GeneralFail" => $GeneralFail) + array("ConFail" => $ConFail);

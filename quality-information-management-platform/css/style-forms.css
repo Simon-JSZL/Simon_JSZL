@@ -29,7 +29,6 @@ input[type="file"],
      -moz-border-radius: 0px;
           border-radius: 0px;
 }
-
 input,
 textarea,
 .uneditable-input {
@@ -118,14 +117,6 @@ select,
    /* For IE7, add top margin to align select with labels */
 
    line-height: 30px;
- }
-
-select,
- input[type="largesearch"] {
-   height: 43.6px;
-   *margin-top: 50px;
-   line-height: 50px;
-   border: 1px solid #cccccc;
  }
 select,
 input[type="search"] {
@@ -830,7 +821,7 @@ input.search-query {
 .form-horizontal .input-append {
   display: inline-block;
   *display: inline;
-  margin-bottom: 0;
+  margin-bottom: 20px;
   vertical-align: middle;
   *zoom: 1;
 }
