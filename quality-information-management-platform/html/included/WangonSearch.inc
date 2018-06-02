@@ -25,10 +25,26 @@
                     let conFailTable = document.getElementById('conFailTable');
                     let typFailTable = document.getElementById('typFailTable');
                     if(data.TypFail!==0){
+                        $('table#typFailTable').find('tbody').detach();
                         let tbody = document.createElement('tbody');
                         for (let i = 0; i < data.TypFail.length; i++) {
-
+                            let tr = document.createElement('tr');
+                            tr.appendChild(document.createElement('td'));
+                            tr.appendChild(document.createElement('td'));
+                            tr.appendChild(document.createElement('td'));
+                            tr.appendChild(document.createElement('td'));
+                            tr.appendChild(document.createElement('td'));
+                            tr.cells[0].appendChild(document.createTextNode(data.TypFail[i].Max_Pos));
+                            tr.cells[1].appendChild(document.createTextNode(data.TypFail[i].Max_Area));
+                            tr.cells[2].appendChild(document.createTextNode(data.TypFail[i].Max_Num));
+                            tr.cells[3].appendChild(document.createTextNode(data.TypFail[i].Avg_Dim));
+                            let image = document.createElement('img');
+                            image.src = "data:image/bmp;base64," + data.TypFail[i].Image;
+                            tr.cells[4].appendChild(image);
+                            tr.cells[4].setAttribute("width","180px");
+                            tbody.appendChild(tr);
                         }
+                        typFailTable.appendChild(tbody);
                     }
                     if(data.ConFail===0) {
                         $('table#conFailTable').find('thead').detach();

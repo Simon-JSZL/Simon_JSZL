@@ -7,7 +7,6 @@ class Totalcount                                                                
     public $params = array();
     public $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
     public $connectionInfo = array("UID" =>"", "PWD" => "", "Database" => "AnalyzedData", 'CharacterSet' => "utf-8");
-    public $runningdate;
     function __construct(){
         $this->conn = sqlsrv_connect($this->dbHost, $this->connectionInfo);
         //$this->wangonName = '0DZ302';
@@ -72,8 +71,22 @@ return $ConResult;
 }
 function typfail($machineId,$wangonName){
     $TypFail=new Totalcount();
-    $sql="";
-
+    $sql="select * from dbo.TypicalFail_".$machineId." where WangonName = '".$wangonName."'";
+    $query = $TypFail->returnQuery($sql);
+    $header="424d56010100000000003600000028000000b40000007800000001002000000000000000000000000000000000000000000000000000";
+    $row = sqlsrv_fetch_array($query);
+    for($i=1;$i<4;$i++)
+    {
+        $TypResult[$i-1]['Max_Pos'] = $row['Max_Pos'.$i];
+        $TypResult[$i-1]['Max_Area'] = $row['Max_Area'.$i];
+        $TypResult[$i-1]['Max_Num'] = $row['Max_Num'.$i];
+        $TypResult[$i-1]['Avg_Dim'] = $row['Avg_Dim'.$i];
+        $sql_image="select TypImage".$i." as Image from dbo.TypicalImage_".$machineId." where WangonName = '".$wangonName."'";
+        $query_image=$TypFail->returnQuery($sql_image);
+        $row_image = sqlsrv_fetch_array($query_image);
+        $TypResult[$i-1]['Image'] = base64_encode(hex2bin($header.($row_image['Image'])));
+    }
+    return $TypResult;
 }
 function returnMachineInfo($WangonName){
     $returnMachineId=new Totalcount();
@@ -107,7 +120,8 @@ function returnData(){
         $WangonInfo=array("MachineId"=>$MachineId,"CreateTime"=>$CreateTime,"SideId"=>$SideId,"ProductId"=>$ProductId);
         $GeneralFail = generalfail($MachineId,$WangonName);
         $ConFail = confail($MachineId,$WangonName);
-        $result = array("WangonInfo"=>$WangonInfo)+array("GeneralFail" => $GeneralFail) + array("ConFail" => $ConFail);
+        $TypFail = typfail($MachineId,$WangonName);
+        $result = array("WangonInfo"=>$WangonInfo)+array("GeneralFail" => $GeneralFail) + array("ConFail" => $ConFail) + array("TypFail"=> $TypFail);
         echo json_encode($result);
     }
 }

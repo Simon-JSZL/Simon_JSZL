@@ -23,7 +23,7 @@ class commondate{
         $this->machineId = 'J5';
         $this->macroTable = 'dbo.ModelMacroLog_339';
         //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
-        $this->currentdate = '2014-06-20';                                          //获取前一天日期
+        $this->currentdate = '2014-06-26';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->conn_Jitai=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_Jitai);
@@ -270,7 +270,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         while ($row_eachwagon = sqlsrv_fetch_array($query_searchindex)) {
             $typfail[$row]['WangonName']=substr($row_eachwagon['tablename'], 1, 7);
             $typimage[$row]['WangonName']=substr($row_eachwagon['tablename'], 1, 7);
-            $sql_typfail="select top 3 count(1) as count,FormatPos as pos,MacroIndex as area from  dbo." . $row_eachwagon['tablename'] ."
+            $sql_typfail="select top 3 count(1) as count,FormatPos as pos,MacroIndex as area,avg(Reserve3) as dimension from  dbo." . $row_eachwagon['tablename'] ."
 where FormatPos!=15 and FormatPos!=8 and FormatPos!=22
 group by FormatPos,MacroIndex
 order by count DESC";
@@ -279,6 +279,7 @@ order by count DESC";
                 $typfail[$row][]=$row_typfail['pos'];
                 $typfail[$row][]=$row_typfail['area'];
                 $typfail[$row][]=$row_typfail['count'];
+                $typfail[$row][]=$row_typfail['dimension'];
                 $sql_getimage="select top 1 ErrorImage as image from dbo." . $row_eachwagon['tablename'] ."
             where FormatPos = ".$row_typfail['pos']." and MacroIndex = ".$row_typfail['area']."
             order by Reserve3 DESC";
@@ -289,8 +290,8 @@ order by count DESC";
         }
     }
     for($temp=0;$temp<count($typfail);$temp++){
-        $sql_insertTyp = "insert into dbo.TypicalFail_".$extractTyp->machineId."([WangonName],[Max_Pos1],[Max_Area1],[Max_Num1],[Max_Pos2],[Max_Area2],[Max_Num2],[Max_Pos3],[Max_Area3],[Max_Num3])
-values('".$typfail[$temp]['WangonName']."','".$typfail[$temp][0]."','".$extractTyp->returnMacroName($typfail[$temp][1])."','".$typfail[$temp][2]."','".$typfail[$temp][3]."','".$extractTyp->returnMacroName($typfail[$temp][4])."','".$typfail[$temp][5]."','".$typfail[$temp][6]."','".$extractTyp->returnMacroName($typfail[$temp][7])."','".$typfail[$temp][8]."')";
+        $sql_insertTyp = "insert into dbo.TypicalFail_".$extractTyp->machineId."([WangonName],[Max_Pos1],[Max_Area1],[Max_Num1],[Avg_Dim1],[Max_Pos2],[Max_Area2],[Max_Num2],[Avg_Dim2],[Max_Pos3],[Max_Area3],[Max_Num3],[Avg_Dim3])
+values('".$typfail[$temp]['WangonName']."','".$typfail[$temp][0]."','".$extractTyp->returnMacroName($typfail[$temp][1])."','".$typfail[$temp][2]."','".$typfail[$temp][3]."','".$typfail[$temp][4]."','".$extractTyp->returnMacroName($typfail[$temp][5])."','".$typfail[$temp][6]."','".$typfail[$temp][7]."','".$typfail[$temp][8]."','".$extractTyp->returnMacroName($typfail[$temp][9])."','".$typfail[$temp][10]."','".$typfail[$temp][11]."')";
         $sql_insertImage="insert into dbo.TypicalImage_".$extractTyp->machineId."([WangonName],[TypImage1],[TypImage2],[TypImage3])
 values ('".$typimage[$temp]['WangonName']."','".$typimage[$temp][0]."','".$typimage[$temp][1]."','".$typimage[$temp][2]."')";
             sqlsrv_query($conn_Server, $sql_insertTyp, $params, $options);
