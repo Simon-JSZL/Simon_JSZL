@@ -5,14 +5,46 @@ include ('./common/header.html');
 ?>		
 	<!-- start: Content -->
 	<div id="content" class="span10">	
-           <ul class="breadcrumb">
-				<li>
-					<i class="icon-home"></i>
-					<a href="MainView.php">主界面</a> 
-					<i class="icon-angle-right"></i>
-				</li>
-				<li><a href="#">时间查询</a></li>
-			</ul>
+		<ul class="breadcrumb">
+			<li>
+				<i class="icon-home"></i>
+				<a href="MainView.php">主界面</a>
+				<i class="icon-angle-right"></i>
+			</li>
+			<li><a href="#">时间查询</a></li>
+		</ul>
+		<div class="row-fluid">
+			<form class="form-search">
+				<input class="input-xlarge" type="date" id="StartDate">
+				<input class="input-xlarge" type="date" id="EndDate">
+				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="dateSearch(getElementById('StartDate').value,getElementById('EndDate').value)">
+			</form>
+		</div>
+		<div class="row-fluid">
+			<div class="span12 statbox-extendheader blue noMargin">
+				<div class="text-center"><strong>作废统计(<span id="tablehead_totaldate_start"></span>~<span id="tablehead_totaldate_end"></span>)</strong></div>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+				<tr>
+					<th class="text-center">平均作废</th>
+					<th class="text-center">平均严重废</th>
+					<th class="text-center">平均三仓数</th>
+					<th class="text-center">作废最多区域</th>
+					<th class="text-center">作废最多K位</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td id="total_AVGFail" class="text-center"></td>
+					<td id="total_AVGSer" class="text-center"></td>
+					<td id="total_AVGPsn" class="text-center"></td>
+					<td id="total_MaxM" class="text-center"></td>
+					<td id="total_MaxK" class="text-center"></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
 	</div><!-- end of content -->
 
 	<?php

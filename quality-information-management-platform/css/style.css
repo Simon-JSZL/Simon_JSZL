@@ -3012,3 +3012,8 @@ ul.messagesList li span.date {
 	padding: 11px 14px;
 	font-size: 16px;
 }
+#StartDate,#EndDate{
+	height: 43.6px;
+	padding: 11px 14px;
+	font-size: 16px;
+}

@@ -1,6 +1,6 @@
 <script>
    $(document).ready(function() {
-       var machineId=document.cookie;
+       let machineId=document.cookie;
        $.ajax({
            url: '../php/MainView_Counting.php',
            type: 'GET',
