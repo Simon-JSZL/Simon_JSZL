@@ -17,8 +17,8 @@ include ('./common/header.html');
 					<div><font face="微软雅黑">机台:</font></div>
                     <div class="jitai">
 					<script>
-					var wangon=document.cookie;
-					document.write(wangon);
+					var machineId=sessionStorage.MachineId;
+					document.write(machineId);
                     </script>
                     </div>
 					<div class="title">
@@ -28,6 +28,13 @@ include ('./common/header.html');
                     </div>
 				</div>	
 			</div>
+        <div class="row-fluid">
+            <div class="span12 statbox-extendheader blue noMargin">
+                <div class="text-center"><strong>上个工作日连续废信息(<span id="tablehead_lastday"></span>)</strong></div>
+            </div>
+            <table class="table table-bordered text-center" id="conFailTable">
+            </table>
+        </div>
         <div class="row-fluid">
             <div class="span12 statbox-extendheader blue noMargin">
                 <div class="text-center"><strong>近期作废统计(<span id="tablehead_totaldate_start"></span>~<span id="tablehead_totaldate_end"></span>)</strong></div>
@@ -54,7 +61,7 @@ include ('./common/header.html');
             </table>
         </div>
         <div class="row-fluid">
-            <div class="span12 statbox-extendheader blue noMargin" onTablet="span12" onDesktop="span12">
+            <div class="span12 statbox-extendheader blue noMargin">
                 <div class="text-center"><strong>近期作废明细</strong></div>
             </div>
             <table class="table table-bordered">

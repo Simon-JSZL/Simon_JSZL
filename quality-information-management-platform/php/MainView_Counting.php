@@ -2,12 +2,14 @@
 include('./CountingFail_Daily.php');
 function MachineId(){
     $MachineId=$_GET['machineId'];
+    //$MachineId='J5';
     return $MachineId;
 }
 function find5days()                                                                                           //查找最近的五个工作日的日期
 {
     $back5days=0;
     $ConnInfo=new ConnectInfo();
+    $runningdate=array();
     $currentdate=date("Y-m-d",strtotime("-1 day"));
     $machineId=MachineId();
     while (1)
@@ -55,9 +57,28 @@ function fivedaycount_eachwangon(){
     $eachwangondetail=$CountFailDaily->runsql_eachwangon($begindate,$enddate,$machineId);
     return $eachwangondetail;
 }
+function lastdaycheck_confail(){
+    $ConnInfo=new ConnectInfo();
+    $lastdate = find5days()[0];
+    $MachineId=MachineId();
+    $LastDayCon=array();
+    $sql_wagonName="select WangonName from dbo.AllIndex where convert(varchar(10),Createtime,120) = '".$lastdate."' and MachineId = '".$MachineId."'";
+    $query_wagonName=$ConnInfo->returnQuery($sql_wagonName);
+    while($row_wagonName=sqlsrv_fetch_array($query_wagonName)){
+        $sql_conFail="select count(1) as count,sum(ConNumber) as ConNum from dbo.ConFail_".$MachineId." where WangonName = '".$row_wagonName['WangonName']."'";
+        $row_conFail=$ConnInfo->returnRow($sql_conFail);
+        if($row_conFail['count']!=0)
+        $LastDayCon[]=array("WagonName"=>$row_wagonName['WangonName'],"ConFailCount"=>$row_conFail['count'],"ConFailNum"=>$row_conFail['ConNum']);
+    }
+    if(count($LastDayCon)!=0)
+        return $LastDayCon;
+    else
+        return 0;
+}
 $totalresult=fivedaycount_total();
 $singleresult=fivedaycount_singleday();
 $eachwangonresult=fivedaycount_eachwangon();
-$result=array("TotalResult"=>$totalresult) + array("SingleResult"=>$singleresult)+array("EachWangonResult"=>$eachwangonresult);
+$lastdayconfail=lastdaycheck_confail();
+$result=array("TotalResult"=>$totalresult) + array("SingleResult"=>$singleresult)+array("EachWangonResult"=>$eachwangonresult)+array("LastDayCon"=>$lastdayconfail);
 echo json_encode($result);
 

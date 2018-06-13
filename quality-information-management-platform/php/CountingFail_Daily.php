@@ -19,19 +19,22 @@ order by count DESC";                                                           
 
         $sql_AVG = "select AVG(Totalfail) as AVGTotal,AVG(Serfail) as AVGSer,AVG(Psnnum) as AVGPsn from ".$TableName."
 where convert(varchar(10),Createtime,120) = '" . $currentdate . "'";
-
-        $row_MaxK=$ConnInfo->returnRow($sql_MaxK);
-        $row_MaxM=$ConnInfo->returnRow($sql_MaxM);
-        $row_Avg=$ConnInfo->returnRow($sql_AVG);
-        $singdayresult = array('maxk'=>$row_MaxK['maxk'],
-            'maxK_count'=>$row_MaxK['count'],
-            'maxM'=>$row_MaxM['maxM'],
-            'maxM_count'=>$row_MaxM['count'],
-            'AVGTotal'=>$row_Avg['AVGTotal'],
-            'AVGSer'=>$row_Avg['AVGSer'],
-            'AVGPsn'=>$row_Avg['AVGPsn'],
-            'CurrentDate'=>$currentdate);
-        return $singdayresult;
+        if(sqlsrv_num_rows($ConnInfo->returnQuery($sql_AVG))==0)
+            return 0;
+        else{
+            $row_MaxK=$ConnInfo->returnRow($sql_MaxK);
+            $row_MaxM=$ConnInfo->returnRow($sql_MaxM);
+            $row_Avg=$ConnInfo->returnRow($sql_AVG);
+            $singdayresult = array('maxk'=>$row_MaxK['maxk'],
+                'maxK_count'=>$row_MaxK['count'],
+                'maxM'=>$row_MaxM['maxM'],
+                'maxM_count'=>$row_MaxM['count'],
+                'AVGTotal'=>$row_Avg['AVGTotal'],
+                'AVGSer'=>$row_Avg['AVGSer'],
+                'AVGPsn'=>$row_Avg['AVGPsn'],
+                'CurrentDate'=>$currentdate);
+            return $singdayresult;
+        }
     }
 
     public function runsql_total($begindate,$enddate,$machineId){//一段时间内总体的作废统计
@@ -51,17 +54,21 @@ order by count DESC";                                                           
 
         $sql_AVG = "select AVG(Totalfail) as AVGTotal,AVG(Serfail) as AVGSer,AVG(Psnnum) as AVGPsn from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "'";//五个工作日内报错总数的平均数
-        $row_MaxK=$ConnInfo->returnRow($sql_MaxK);
-        $row_MaxM=$ConnInfo->returnRow($sql_MaxM);
-        $row_Avg=$ConnInfo->returnRow($sql_AVG);
-        $totalresult = array('maxk_total'=>$row_MaxK['maxk'],
-            'maxK_count_total'=>$row_MaxK['count'],
-            'maxM_total'=>$row_MaxM['maxM'],
-            'maxM_count_total'=>$row_MaxM['count'],
-            'AVGTotal_total'=>$row_Avg['AVGTotal'],
-            'AVGSer_total'=>$row_Avg['AVGSer'],
-            'AVGPsn_total'=>$row_Avg['AVGPsn']);
-        return $totalresult;
+        if(sqlsrv_num_rows($ConnInfo->returnQuery($sql_AVG))==0)
+            return 0;
+        else {
+            $row_MaxK=$ConnInfo->returnRow($sql_MaxK);
+            $row_MaxM=$ConnInfo->returnRow($sql_MaxM);
+            $row_Avg=$ConnInfo->returnRow($sql_AVG);
+            $totalresult = array('maxk_total'=>$row_MaxK['maxk'],
+                'maxK_count_total'=>$row_MaxK['count'],
+                'maxM_total'=>$row_MaxM['maxM'],
+                'maxM_count_total'=>$row_MaxM['count'],
+                'AVGTotal_total'=>$row_Avg['AVGTotal'],
+                'AVGSer_total'=>$row_Avg['AVGSer'],
+                'AVGPsn_total'=>$row_Avg['AVGPsn']);
+            return $totalresult;
+        }
     }
 
     public function runsql_eachwangon($begindate,$enddate,$machineId){
@@ -73,14 +80,18 @@ where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . 
 where convert(varchar(10),Createtime,120) between '" . $begindate . "' and '" . $enddate . "'
 order by Createtime";
         $query = $ConnInfo->returnQuery($sql);
-        while ($row_eachline = sqlsrv_fetch_array($query)) {
-            $arr[$j] = array('crtime_wangon'=>$row_eachline['createtime'],
-                'tablename'=>$row_eachline['wangon'],
-                'totalfail_wangon'=>$row_eachline['totalfail'],
-                'serfail_wangon'=>$row_eachline['serfail'],
-                'psnnum_wangon'=>$row_eachline['psnnum']);
-            $j++;
-        }
+        if(sqlsrv_num_rows($query)==0)
+            return 0;
+        else{
+            while ($row_eachline = sqlsrv_fetch_array($query)) {
+                $arr[$j] = array('crtime_wangon'=>$row_eachline['createtime'],
+                    'tablename'=>$row_eachline['wangon'],
+                    'totalfail_wangon'=>$row_eachline['totalfail'],
+                    'serfail_wangon'=>$row_eachline['serfail'],
+                    'psnnum_wangon'=>$row_eachline['psnnum']);
+                $j++;
+            }
         return $arr;
+        }
     }
 }
