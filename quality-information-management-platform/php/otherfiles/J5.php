@@ -18,12 +18,14 @@ class commondate{
     public $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
     public $macroTable;
     public $machineId;
+    public $procedure;
     public function  __construct()
     {
         $this->machineId = 'J5';
         $this->macroTable = 'dbo.ModelMacroLog_339';
+        $this->procedure = 'W2';
         //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
-        $this->currentdate = '2014-06-26';                                          //获取前一天日期
+        $this->currentdate = '2014-06-21';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->conn_Jitai=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_Jitai);
@@ -43,7 +45,7 @@ class commondate{
     {
         $count=0;
         $lastday=$this->currentdate;
-        $stopdate=strtotime("2014-4-10 00:00:00");
+        $stopdate=strtotime("2014-01-01 00:00:00");
         while(1)
         {
             $sql_searchlastday = "select count(1) as count from dbo.Indextable
@@ -69,16 +71,6 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             return $row['MacroName'];
         }
     return $MacroId;
-    }
-    public function checkIfExist($checkArr,$tableName,$temp){
-        $sql_checkifexist = "select count(1) as checksum from dbo.".$tableName." where WangonName ='".$checkArr[$temp]['WangonName']."'";
-        $query_checkifexist = sqlsrv_query($this->conn_Server, $sql_checkifexist, $this->params, $this->options);
-        while ($checkifexist = sqlsrv_fetch_array($query_checkifexist)) {
-            if ($checkifexist['checksum'] == 0) {
-                return true;
-            }
-        }
-    return false;
     }
 }
 function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在返回列数，不在返回false
@@ -141,14 +133,20 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         }
     }
     for ($temp = 0; $temp < count($faillist); $temp++) {
+    	$MacroName=trim($extractdate->returnMacroName($faillist[$temp][5]));
         $sql_insertFail = "insert into dbo.GeneralFail_".$extractdate->machineId."([WangonName],[CreateTime],[TotalFail],[SerFail],[PsnNum],[MaxK],[MaxM])
-values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . trim($extractdate->returnMacroName($faillist[$temp][5])) . "')";
-        $sql_insertIndex = "insert into dbo.AllIndex([WangonName],[CreateTime],MachineId)
+values('" . $faillist[$temp]['WangonName'] . "','" . $faillist[$temp][0] . "','" . $faillist[$temp][1] . "','" . $faillist[$temp][2] . "','" . $faillist[$temp][3] . "','" . $faillist[$temp][4] . "','" . $MacroName . "')";
+        $sql_insertIndex = "insert into dbo.AllIndex([WangonName],[CreateTime_".$extractdate->procedure."],[MachineId_".$extractdate->procedure."])
 values('".$index[$temp]['WangonName']."','".$index[$temp][0]."','".$index[$temp][1]."')";
-        if($extractdate->checkIfExist($faillist,"GeneralFail_".$extractdate->machineId,$temp)==true)
-            sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
-        if($extractdate->checkIfExist($index,"AllIndex",$temp)==true)
-            sqlsrv_query($conn_Server, $sql_insertIndex, $params, $options);
+        $sql_updateIndex = "update dbo.AllIndex set [CreateTime_".$extractdate->procedure."] = '".$index[$temp][0]."' , [MachineId_".$extractdate->procedure."] = '".$index[$temp][1]."' where WangonName = '".$index[$temp]['WangonName']."'";
+        $sql_checkifexist = "select count(1) as checksum from dbo.AllIndex where WangonName = '".$index[$temp]['WangonName']."'";
+        $query_checkifexist = sqlsrv_query($conn_Server, $sql_checkifexist, $params, $options);
+        $checkifexist = sqlsrv_fetch_array($query_checkifexist);
+        if($checkifexist['checksum']==0)
+        sqlsrv_query($conn_Server, $sql_insertIndex, $params, $options);
+        else
+        sqlsrv_query($conn_Server, $sql_updateIndex, $params, $options);
+        sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);  	
     }
 }
 

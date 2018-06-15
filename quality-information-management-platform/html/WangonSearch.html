@@ -15,7 +15,11 @@ include ('./common/header.html');
 		</ul>
 		<div class="row-fluid">
 			<form class="form-search">
-				<input class="input-xxlarge" type="text" placeholder="输入车号" id="WangonName">
+				<input class="input-xlarge" type="text" placeholder="输入车号" id="WangonName">
+				<select class="input-xlarge" id="Procedure">
+					<option>正面</option>
+					<option>背面</option>
+				</select>
 				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value)">
 			</form>
 		</div>
@@ -27,6 +31,7 @@ include ('./common/header.html');
 				<table class="table table-bordered">
 					<thead>
 					<tr>
+						<th class="text-center">车号</th>
 						<th class="text-center">印刷机台</th>
 						<th class="text-center">印刷时间</th>
 						<th class="text-center">面次</th>
@@ -35,6 +40,7 @@ include ('./common/header.html');
 					</thead>
 					<tbody>
 					<tr>
+						<td id="WagonName" class="text-center"></td>
 						<td id="MachineId" class="text-center"></td>
 						<td id="CreateTime" class="text-center"></td>
 						<td id="SideId" class="text-center"></td>

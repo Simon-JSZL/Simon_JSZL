@@ -1,5 +1,5 @@
-function gotoWagonSearch($WagonName){
-    sessionStorage.WagonName=$WagonName;
+function gotoWagonSearch(WagonName){
+    sessionStorage.WagonName=WagonName;
     window.location.href = "WangonSearch.html";
 }
 $(document).ready(function() {
@@ -99,12 +99,18 @@ $(document).ready(function() {
                     bottom: '3%',
                     containLabel: true
                 },
-                toolbox: {
-                    left: 'right',
-                    feature: {
-                        dataZoom: {}
+                dataZoom: [
+                    {
+                        type: 'slider',
+                        start: 0,
+                        end: 100
+                    },
+                    {
+                        type: 'inside',
+                        start: 0,
+                        end: 100
                     }
-                },
+                ],
                 xAxis: {
                     type: 'time',
                     boundaryGap: false
@@ -162,6 +168,10 @@ $(document).ready(function() {
             };
             // 使用刚指定的配置项和数据显示图表。
             myChart.setOption(option);
+            myChart.on('click', function (params) {
+                sessionStorage.WagonName=params.value[1];
+                window.location.href = "WangonSearch.html";
+            });
         },
         error: function(data){
             console.log(data);

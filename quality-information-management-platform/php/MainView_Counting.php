@@ -62,7 +62,7 @@ function lastdaycheck_confail(){
     $lastdate = find5days()[0];
     $MachineId=MachineId();
     $LastDayCon=array();
-    $sql_wagonName="select WangonName from dbo.AllIndex where convert(varchar(10),Createtime,120) = '".$lastdate."' and MachineId = '".$MachineId."'";
+    $sql_wagonName="select WangonName from dbo.GeneralFail_".$MachineId." where convert(varchar(10),Createtime,120) = '".$lastdate."'";
     $query_wagonName=$ConnInfo->returnQuery($sql_wagonName);
     while($row_wagonName=sqlsrv_fetch_array($query_wagonName)){
         $sql_conFail="select count(1) as count,sum(ConNumber) as ConNum from dbo.ConFail_".$MachineId." where WangonName = '".$row_wagonName['WangonName']."'";

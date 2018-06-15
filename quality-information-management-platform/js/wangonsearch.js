@@ -6,13 +6,14 @@ $(document).ready(function() {
     }
    sessionStorage.WagonName="";
 });
-function wangonSearch(str) {
-    wangonName=str;
+function wangonSearch(WagonName,Procedure) {
+    wangonName=WagonName;
+    procedure=Procedure;
     $.ajax({
         url: '../php/WangonSearch_Counting.php',
         type: 'GET',
         dataType: 'JSON',
-        data: {"wangonName":wangonName},
+        data: {"wangonName":wangonName,"Procedure":procedure},
         success: function(data){
             if(data===0) {
                 $('div#wangonSearchTablesDiv').hide();
@@ -20,6 +21,7 @@ function wangonSearch(str) {
             }
             else {
                 $('div#wangonSearchTablesDiv').show();
+                document.getElementById("WagonName").innerText = wangonName;
                 document.getElementById("MachineId").innerText = data.WangonInfo.MachineId;
                 document.getElementById("CreateTime").innerText = data.WangonInfo.CreateTime;
                 document.getElementById("SideId").innerText = (data.WangonInfo.SideId===1)?'正面':'反面';

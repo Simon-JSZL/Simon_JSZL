@@ -4,13 +4,21 @@ function wagonName(){
     $WagonName=$_GET['wangonName'];
     return $WagonName;
 }
-function returnMachineInfo($WangonName){
+function returnProcedure(){
+    $Procedure=$_GET['procedure'];
+    if($Procedure=='背面')
+        $Procedure='W1';
+    else if($Procedure=='正面')
+        $Procedure='W2';
+    return $Procedure;
+}
+function returnMachineInfo($WangonName,$Procedure){
     $ConnInfo=new ConnectInfo();
-    $sql="select MachineId as MachineId,CreateTime as CreateTime from dbo.AllIndex where WangonName = '".$WangonName."'";
+    $sql="select * from dbo.AllIndex where WangonName = '".$WangonName."'";
     $query=$ConnInfo->returnQuery($sql);
     $row=sqlsrv_fetch_array($query);
-    $MachineId=$row['MachineId'];
-    $CreateTime=$row['CreateTime'];
+    $MachineId=$row['MachineId_'.$Procedure];
+    $CreateTime=$row['CreateTime_'.$Procedure];
     $sql_machineInfo="select SideId as SideId,ProductId as ProductId from dbo.MachineInfo where MachineId = '".$MachineId."'";
     $query_machineInfo=$ConnInfo->returnQuery($sql_machineInfo);
     $row_machineInfo=sqlsrv_fetch_array($query_machineInfo);
@@ -22,7 +30,8 @@ function returnMachineInfo($WangonName){
 
 function returnData(){
     $WangonName=wagonName();
-    $Info=returnMachineInfo($WangonName);
+    $Procedure=returnProcedure();
+    $Info=returnMachineInfo($WangonName,$Procedure);
     $MachineId=$Info['MachineId'];
     $CountingFailWagon=new CountingFailWagon();
     if($Info['MachineId']==Null){

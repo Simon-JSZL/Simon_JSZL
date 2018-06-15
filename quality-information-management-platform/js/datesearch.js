@@ -11,7 +11,6 @@ function dateSearch(StartDate,EndDate) {
                 alert("未查询到该时间段内有印刷车次");
             }
             else {
-                console.log(data);
                 $('div#dataSearchTablesDiv').show();
                 document.getElementById("tablehead_totaldate_start").innerText=data.SingleResult[0].CurrentDate;
                 document.getElementById("tablehead_totaldate_end").innerText=data.SingleResult[data.SingleResult.length-1].CurrentDate;
@@ -63,12 +62,18 @@ function dateSearch(StartDate,EndDate) {
                         bottom: '3%',
                         containLabel: true
                     },
-                    toolbox: {
-                        left: 'right',
-                        feature: {
-                            dataZoom: {}
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type: 'inside',
+                            start: 0,
+                            end: 100
                         }
-                    },
+                    ],
                     xAxis: {
                         type: 'time',
                         boundaryGap: false
@@ -126,6 +131,10 @@ function dateSearch(StartDate,EndDate) {
                 };
                 // 使用刚指定的配置项和数据显示图表。
                 wagonChart.setOption(option);
+                wagonChart.on('click', function (params) {
+                    sessionStorage.WagonName=params.value[1];
+                    window.location.href = "WangonSearch.html";
+                });
             }
         },
         error: function(data){
