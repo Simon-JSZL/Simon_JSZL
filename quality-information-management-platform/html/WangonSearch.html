@@ -20,7 +20,7 @@ include ('./common/header.html');
 					<option>正面</option>
 					<option>背面</option>
 				</select>
-				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value)">
+				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value,getElementById('Procedure').value)">
 			</form>
 		</div>
 		<div style="display:none" id="wangonSearchTablesDiv">

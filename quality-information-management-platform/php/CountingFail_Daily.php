@@ -2,6 +2,13 @@
 include('./ConnectInfo.php');
 class CountingFailDaily
 {
+    public function returnProcedure($machineId){
+        $ConnInfo=new ConnectInfo();
+        $sql = "select * from dbo.MachineInfo where MachineId = '".$machineId."'";
+        $row= $ConnInfo->returnRow($sql);
+        $Info = array("MachineId"=>$machineId,"Procedure"=>$row['SideId'],"ProductId"=>$row['ProductId']);
+        return $Info;
+    }
     public function runsql_singleday($currentdate,$machineId){
         $TableName='dbo.GeneralFail_'.$machineId;
         $ConnInfo=new ConnectInfo();

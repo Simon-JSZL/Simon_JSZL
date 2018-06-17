@@ -6,9 +6,9 @@ function wagonName(){
 }
 function returnProcedure(){
     $Procedure=$_GET['procedure'];
-    if($Procedure=='背面')
+    if($Procedure=='背面'||$Procedure=0)
         $Procedure='W1';
-    else if($Procedure=='正面')
+    else if($Procedure=='正面'||$Procedure=1)
         $Procedure='W2';
     return $Procedure;
 }

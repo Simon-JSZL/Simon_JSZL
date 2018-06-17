@@ -25,7 +25,12 @@ function find5days()                                                            
     }
     return $runningdate;//倒序:[arr0 => 2018-04-25,arr1=>2018-04-24...]
 }
-
+function  returnInfo(){
+    $machineId= MachineId();
+    $CountFailDaily = new CountingFailDaily();
+    $Info = $CountFailDaily->returnProcedure($machineId);
+    return $Info;
+}
 function fivedaycount_total(){
     @ $begindate = find5days()[4];
     $enddate = find5days()[0];
@@ -75,10 +80,11 @@ function lastdaycheck_confail(){
     else
         return 0;
 }
+$Info=returnInfo();
 $totalresult=fivedaycount_total();
 $singleresult=fivedaycount_singleday();
 $eachwangonresult=fivedaycount_eachwangon();
 $lastdayconfail=lastdaycheck_confail();
-$result=array("TotalResult"=>$totalresult) + array("SingleResult"=>$singleresult)+array("EachWangonResult"=>$eachwangonresult)+array("LastDayCon"=>$lastdayconfail);
+$result=array("MachineInfo"=>$Info)+array("TotalResult"=>$totalresult) + array("SingleResult"=>$singleresult)+array("EachWangonResult"=>$eachwangonresult)+array("LastDayCon"=>$lastdayconfail);
 echo json_encode($result);
 

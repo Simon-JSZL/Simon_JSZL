@@ -1,5 +1,5 @@
 function dateSearch(StartDate,EndDate) {
-    let machineId=document.cookie;
+    let machineId=sessionStorage.MachineId;
     $.ajax({
         url: '../php/DateSearch_Counting.php',
         type: 'GET',

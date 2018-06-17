@@ -1,5 +1,7 @@
-function gotoWagonSearch(WagonName){
+function gotoWagonSearch(WagonName,Procedure){
     sessionStorage.WagonName=WagonName;
+    sessionStorage.Procedure=Procedure;
+    console.log(sessionStorage);
     window.location.href = "WangonSearch.html";
 }
 $(document).ready(function() {
@@ -10,6 +12,8 @@ $(document).ready(function() {
         dataType: 'JSON',
         data: {"machineId":machineId},
         success: function(data){
+            console.log(data);
+            let Procedure = data.MachineInfo.Procedure;
             let conFailTable = document.getElementById('conFailTable');
             if(data.LastDayCon===0){
                 $('table#conFailTable').find('thead').detach();
@@ -52,7 +56,7 @@ $(document).ready(function() {
                     let goto=document.createElement('input');
                     goto.value="明细";
                     goto.type="button";
-                    goto.setAttribute("onclick","gotoWagonSearch('"+WagonName+"')");
+                    goto.setAttribute("onclick","gotoWagonSearch('"+WagonName+"','"+Procedure+"')");
                     goto.setAttribute("class","btn btn-large btn-primary");
                     tr.cells[3].appendChild(goto);
                     tbody.appendChild(tr);
@@ -169,8 +173,8 @@ $(document).ready(function() {
             // 使用刚指定的配置项和数据显示图表。
             myChart.setOption(option);
             myChart.on('click', function (params) {
-                sessionStorage.WagonName=params.value[1];
-                window.location.href = "WangonSearch.html";
+                let WagonName=params.value[1];
+                gotoWagonSearch(WagonName,Procedure)
             });
         },
         error: function(data){

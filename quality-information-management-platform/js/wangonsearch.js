@@ -1,8 +1,8 @@
 $(document).ready(function() {
     let WagonName=sessionStorage.WagonName;
-    console.log(WagonName);
+    let Procedure=sessionStorage.Procedure;
     if(WagonName!=="") {
-        wangonSearch(WagonName);
+        wangonSearch(WagonName,Procedure);
     }
    sessionStorage.WagonName="";
 });
@@ -13,7 +13,7 @@ function wangonSearch(WagonName,Procedure) {
         url: '../php/WangonSearch_Counting.php',
         type: 'GET',
         dataType: 'JSON',
-        data: {"wangonName":wangonName,"Procedure":procedure},
+        data: {"wangonName":wangonName,"procedure":procedure},
         success: function(data){
             if(data===0) {
                 $('div#wangonSearchTablesDiv').hide();
