@@ -21,9 +21,9 @@ class commondate{
     public $procedure;
     public function  __construct()
     {
-        $this->machineId = 'J5';
+        $this->machineId = 'W10#2';
         $this->macroTable = 'dbo.ModelMacroLog_339';
-        $this->procedure = 'W2';
+        $this->procedure = 'W1';
         //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
         $this->currentdate = '2014-06-21';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);

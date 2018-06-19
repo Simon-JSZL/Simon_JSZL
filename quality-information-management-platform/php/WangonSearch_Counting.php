@@ -2,21 +2,22 @@
 include('./CountingFail_Wagon.php');
 function wagonName(){
     $WagonName=$_GET['wangonName'];
+    //$WagonName='0DZ332';
     return $WagonName;
 }
 function returnProcedure(){
     $Procedure=$_GET['procedure'];
-    if($Procedure=='背面'||$Procedure=0)
+    //$Procedure=0;
+    if($Procedure==0)
         $Procedure='W1';
-    else if($Procedure=='正面'||$Procedure=1)
+    else if($Procedure==1)
         $Procedure='W2';
     return $Procedure;
 }
 function returnMachineInfo($WangonName,$Procedure){
     $ConnInfo=new ConnectInfo();
     $sql="select * from dbo.AllIndex where WangonName = '".$WangonName."'";
-    $query=$ConnInfo->returnQuery($sql);
-    $row=sqlsrv_fetch_array($query);
+    $row=$ConnInfo->returnRow($sql);
     $MachineId=$row['MachineId_'.$Procedure];
     $CreateTime=$row['CreateTime_'.$Procedure];
     $sql_machineInfo="select SideId as SideId,ProductId as ProductId from dbo.MachineInfo where MachineId = '".$MachineId."'";

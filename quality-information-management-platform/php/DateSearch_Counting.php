@@ -17,8 +17,8 @@ function checkRunning($date){
             return false;
 }
 function machineId(){
-    //$MachineId=$_GET['MachineId'];
-    $MachineId='J5';
+    $MachineId=$_GET['MachineId'];
+    //$MachineId='J5';
     return $MachineId;
 }
 function datesearch_total(){

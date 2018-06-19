@@ -9,12 +9,18 @@ $(document).ready(function() {
 function wangonSearch(WagonName,Procedure) {
     wangonName=WagonName;
     procedure=Procedure;
+    if(procedure==='正面')
+        procedure=1;
+    else if(procedure==='背面')
+        procedure=0;
     $.ajax({
         url: '../php/WangonSearch_Counting.php',
         type: 'GET',
         dataType: 'JSON',
         data: {"wangonName":wangonName,"procedure":procedure},
         success: function(data){
+            console.log(sessionStorage);
+            console.log(data);
             if(data===0) {
                 $('div#wangonSearchTablesDiv').hide();
                 alert("未查询到车次:"+wangonName+"请重新输入车号");
@@ -24,7 +30,7 @@ function wangonSearch(WagonName,Procedure) {
                 document.getElementById("WagonName").innerText = wangonName;
                 document.getElementById("MachineId").innerText = data.WangonInfo.MachineId;
                 document.getElementById("CreateTime").innerText = data.WangonInfo.CreateTime;
-                document.getElementById("SideId").innerText = (data.WangonInfo.SideId===1)?'正面':'反面';
+                document.getElementById("SideId").innerText = (data.WangonInfo.SideId===1)?'正面':'背面';
                 document.getElementById("ProductId").innerText = data.WangonInfo.ProductId;
                 document.getElementById("TotalFail").innerText = data.GeneralFail.TotalFail;
                 document.getElementById("SerFail").innerText = data.GeneralFail.SerFail;
