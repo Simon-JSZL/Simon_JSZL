@@ -1,4 +1,4 @@
-﻿﻿<?php
+﻿<?php
 class commondate{
     public $dbHost_Jitai = "localhost";
     public $dbHost_Server = "localhost";
@@ -21,11 +21,11 @@ class commondate{
     public $procedure;
     public function  __construct()
     {
-        $this->machineId = 'W10#2';
+        $this->machineId = 'J5';
         $this->macroTable = 'dbo.ModelMacroLog_339';
-        $this->procedure = 'W1';
+        $this->procedure = 'W2';
         //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
-        $this->currentdate = '2014-06-21';                                          //获取前一天日期
+        $this->currentdate = '2014-06-20';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->conn_Jitai=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_Jitai);
@@ -81,8 +81,38 @@ function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在�
     }
     return false;
 }
-function ExtractComFail()
-{
+function ExtractSumFail(){
+    $EachWagonFail=ExtractComFail();
+    $CommDate=new commondate();
+    $CurrentDate=new DateTime($EachWagonFail[0][0]);
+    $CurrentDate=$CurrentDate->format('Y/m/d');
+    $WagonNum=count($EachWagonFail);
+    $avg_Total=array_column($EachWagonFail,1);
+    $avg_Ser=array_column($EachWagonFail,2);
+    $avg_Psn=array_column($EachWagonFail,3);
+    $count_MaxK=array_count_values(array_column($EachWagonFail,4));
+    $count_MaxM=array_count_values(array_column($EachWagonFail,5));
+    asort($count_MaxK);
+    asort($count_MaxM);
+    end($count_MaxK);
+    end($count_MaxM);
+    $EachDayFail=array("CreatTime"=>$CurrentDate,
+        "AvgTotal"=>array_sum($avg_Total)/$WagonNum,
+        "AvgSer"=>array_sum($avg_Ser)/$WagonNum,
+        "AvgPsn"=>array_sum($avg_Psn)/$WagonNum,
+        "MaxK"=>key($count_MaxK),
+        "MaxM"=>$CommDate->returnMacroName(key($count_MaxM)));
+    reset($avg_Total);
+    reset($avg_Ser);
+    reset($avg_Psn);
+    reset($count_MaxK);
+    reset($count_MaxM);
+    $sql="insert into SumFail_".$CommDate->machineId."([CreateTime],[TotalFail],[SerFail],[PsnNum],[MaxK],[MaxM]) 
+values('".$EachDayFail['CreatTime']."',".$EachDayFail['AvgTotal'].",".$EachDayFail['AvgSer'].",".$EachDayFail['AvgPsn'].",".$EachDayFail['MaxK'].",'".$EachDayFail['MaxM']."')";
+    sqlsrv_query($CommDate->conn_Server, $sql, $CommDate->params, $CommDate->options);
+    return $EachDayFail;
+}
+function ExtractComFail(){
    $extractdate=new commondate();
    $lastday=$extractdate->findlastday();
    $conn_Jitai=$extractdate->conn_Jitai;
@@ -114,13 +144,13 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             $query_psn = sqlsrv_query($conn_Jitai, $sql_psn, $params, $options);
             $query_maxk = sqlsrv_query($conn_Jitai, $sql_maxk, $params, $options);
             $query_maxM = sqlsrv_query($conn_Jitai, $sql_maxM, $params, $options);
-            $faillist[$i]['WangonName'] = substr($row_eachwagon['tablename'], 1, 7);
-            $faillist[$i][] = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');
             $row_total=sqlsrv_fetch_array($query_total);
             $row_ser=sqlsrv_fetch_array($query_ser);
             $row_psn=sqlsrv_fetch_array($query_psn);
             $row_maxk=sqlsrv_fetch_array($query_maxk);
             $row_maxM=sqlsrv_fetch_array($query_maxM);
+            $faillist[$i]['WangonName'] = substr($row_eachwagon['tablename'], 1, 7);
+            $faillist[$i][] = $row_eachwagon['CreateTime']->format('Y/m/d H:i:s');
             $faillist[$i][] = $row_total['count'];
             $faillist[$i][] = $row_ser['count'];
             $faillist[$i][] = $row_psn['psnnum'];
@@ -146,8 +176,9 @@ values('".$index[$temp]['WangonName']."','".$index[$temp][0]."','".$index[$temp]
         sqlsrv_query($conn_Server, $sql_insertIndex, $params, $options);
         else
         sqlsrv_query($conn_Server, $sql_updateIndex, $params, $options);
-        sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);  	
+        sqlsrv_query($conn_Server, $sql_insertFail, $params, $options);
     }
+return $faillist;
 }
 
 function ExtractConFail(){//查找并向服务器端数据库插入连续废
@@ -296,6 +327,7 @@ values ('".$typimage[$temp]['WangonName']."','".$typimage[$temp][0]."','".$typim
             sqlsrv_query($conn_Server, $sql_insertImage, $params, $options);
     }
 }
+ExtractSumFail();
 ExtractComFail();
 ExtractConFail();
 ExtractTypicalFail();

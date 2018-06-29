@@ -10,40 +10,22 @@ class CountingFailDaily
         return $Info;
     }
     public function runsql_singleday($currentdate,$machineId){
-        $TableName='dbo.GeneralFail_'.$machineId;
+        $TableName='dbo.SumFail_'.$machineId;
         $ConnInfo=new ConnectInfo();
-        $sql_MaxK = "select top 1 Maxk as maxk ,COUNT(1) as count
-from ".$TableName."
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "'
-group by MaxK
-order by count DESC";                                                                                                 //一日报错最多K位
-
-        $sql_MaxM = "select top 1 MaxM as maxM ,COUNT(1) as count
-from ".$TableName."
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "'
-group by MaxM
-order by count DESC";                                                                                                 //一日报错最多区域
-
-        $sql_AVG = "select AVG(Totalfail) as AVGTotal,AVG(Serfail) as AVGSer,AVG(Psnnum) as AVGPsn from ".$TableName."
-where convert(varchar(10),Createtime,120) = '" . $currentdate . "'";
-        if(sqlsrv_num_rows($ConnInfo->returnQuery($sql_AVG))==0)
+        $sql="select * from ".$TableName." where convert(varchar(10),CreateTime,120) = '".$currentdate."'";
+        if(sqlsrv_num_rows($ConnInfo->returnQuery($sql))==0)
             return 0;
         else{
-            $row_MaxK=$ConnInfo->returnRow($sql_MaxK);
-            $row_MaxM=$ConnInfo->returnRow($sql_MaxM);
-            $row_Avg=$ConnInfo->returnRow($sql_AVG);
-            $singdayresult = array('maxk'=>$row_MaxK['maxk'],
-                'maxK_count'=>$row_MaxK['count'],
-                'maxM'=>$row_MaxM['maxM'],
-                'maxM_count'=>$row_MaxM['count'],
-                'AVGTotal'=>$row_Avg['AVGTotal'],
-                'AVGSer'=>$row_Avg['AVGSer'],
-                'AVGPsn'=>$row_Avg['AVGPsn'],
+            $row=$ConnInfo->returnRow($sql);
+            $singdayresult = array('maxk'=>$row['MaxK'],
+                'maxM'=>$row['MaxM'],
+                'AVGTotal'=>$row['TotalFail'],
+                'AVGSer'=>$row['SerFail'],
+                'AVGPsn'=>$row['PsnNum'],
                 'CurrentDate'=>$currentdate);
             return $singdayresult;
         }
     }
-
     public function runsql_total($begindate,$enddate,$machineId){//一段时间内总体的作废统计
         $TableName='dbo.GeneralFail_'.$machineId;
         $ConnInfo=new ConnectInfo();

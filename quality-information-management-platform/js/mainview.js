@@ -1,7 +1,5 @@
-function gotoWagonSearch(WagonName,Procedure){
+function gotoWagonSearch(WagonName){
     sessionStorage.WagonName=WagonName;
-    sessionStorage.Procedure=Procedure;
-    console.log(sessionStorage);
     window.location.href = "WangonSearch.html";
 }
 $(document).ready(function() {
@@ -12,9 +10,9 @@ $(document).ready(function() {
         dataType: 'JSON',
         data: {"machineId":machineId},
         success: function(data){
-            console.log(data);
             let Procedure = data.MachineInfo.Procedure;
             let conFailTable = document.getElementById('conFailTable');
+            sessionStorage.Procedure=Procedure;
             if(data.LastDayCon===0){
                 $('table#conFailTable').find('thead').detach();
                 $('table#conFailTable').find('tbody').empty();
@@ -56,7 +54,7 @@ $(document).ready(function() {
                     let goto=document.createElement('input');
                     goto.value="明细";
                     goto.type="button";
-                    goto.setAttribute("onclick","gotoWagonSearch('"+WagonName+"','"+Procedure+"')");
+                    goto.setAttribute("onclick","gotoWagonSearch('"+WagonName+"')");
                     goto.setAttribute("class","btn btn-large btn-primary");
                     tr.cells[3].appendChild(goto);
                     tbody.appendChild(tr);
@@ -174,7 +172,7 @@ $(document).ready(function() {
             myChart.setOption(option);
             myChart.on('click', function (params) {
                 let WagonName=params.value[1];
-                gotoWagonSearch(WagonName,Procedure)
+                gotoWagonSearch(WagonName)
             });
         },
         error: function(data){
