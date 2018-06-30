@@ -12,16 +12,16 @@ function compareData(StartDate, EndDate, ProductId, SideId) {
             if(data===0)
                 alert("未查询到该时间段内有印刷车次");
             else{
-                var chartdetail_AvgTotal = [];
-                var chartdetail_MachineId= [];
-                var totalFailChart = echarts.init(document.getElementById('totalFail_chart'), 'light');
-                var series=[];
+                let chartdetail_AvgTotal = [];
+                //let chartdetail_MachineId= [];
+                let totalFailChart = echarts.init(document.getElementById('totalFail_chart'), 'light');
+                let series=[];
                 for(let i=0;i<data.CompareData.length;i++)
                 {
-                    MachineId=data.CompareData[i][0]['MachineId'];
+                    let MachineId=data.CompareData[i][0]['MachineId'];
                     for(let j=1;j<data.CompareData[i].length;j++){
-                        CurrentDate=data.CompareData[i][j]['CurrentDate'];
-                        AvgTotal=data.CompareData[i][j]['AvgTotal'];
+                        let CurrentDate=data.CompareData[i][j]['CurrentDate'];
+                        let AvgTotal=data.CompareData[i][j]['AvgTotal'];
                         series.push([MachineId,CurrentDate,AvgTotal]);
                     }
                 }
