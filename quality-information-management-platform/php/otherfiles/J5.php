@@ -10,26 +10,28 @@ class commondate{
     public $dbName_Server = 'AnalyzedData';
     public $conn_Jitai;
     public $conn_Server;
+    public $conn_MB;
     public $charset = 'utf-8';
     public $currentdate;
     public $connectionInfo_Jitai;
     public $connectionInfo_Server;
+    public $connectionInfo_MB;
     public $params = array();
     public $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
-    public $macroTable;
     public $machineId;
     public $procedure;
     public function  __construct()
     {
         $this->machineId = 'J5';
-        $this->macroTable = 'dbo.ModelMacroLog_339';
         $this->procedure = 'W2';
         //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
         $this->currentdate = '2014-06-20';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
+        $this->connectionInfo_MB = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => 'MB', 'CharacterSet' => $this->charset);
         $this->conn_Jitai=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_Jitai);
         $this->conn_Server=sqlsrv_connect($this->dbHost_Server,$this->connectionInfo_Server);
+        $this->conn_MB=sqlsrv_connect($this->dbHost_Jitai,$this->connectionInfo_MB);
         if($this->conn_Jitai == false)
         {
             sqlsrv_close($this->conn_Jitai);
@@ -64,9 +66,14 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         return $lastday;
     }
     public function returnMacroName($MacroId){//返回宏区域名称
-        $sql = "select top 1 MacroTitle as MacroName from ".$this->macroTable."
-                  where MacroID=".$MacroId;
-        $query = sqlsrv_query($this->conn_Jitai, $sql, $this->params, $this->options);
+        $sql_getTable="select ID from dbo.cur_model";
+        $query_getTable= sqlsrv_query($this->conn_MB, $sql_getTable, $this->params, $this->options);
+        $TableId=sqlsrv_fetch_array($query_getTable)['ID'];
+        $MacroTable='dbo.ModelMacroLog_'.$TableId;
+        $sql = "select top 1 MacroTitle as MacroName from ".$MacroTable."
+                  where MacroID=".$MacroId."
+                  order by ID DESC";
+        $query = sqlsrv_query($this->conn_MB, $sql, $this->params, $this->options);
         while ($row = sqlsrv_fetch_array($query)) {
             return $row['MacroName'];
         }
