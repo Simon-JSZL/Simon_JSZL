@@ -76,7 +76,7 @@ function wangonSearch(WagonName,Procedure) {
                 else {
                     $('table#conFailTable').find('thead').detach();
                     $('table#conFailTable').find('tbody').detach();
-                    let tableHead = ["编号","连续废张数","起始大张编号","末尾大张编号","连续废区域","连续废所在列","图像1","图像2"];
+                    let tableHead = ["编号","连续废张数","起始大张编号","末尾大张编号","连续废区域","连续废所在列","起始图像","末尾图像"];
                     let tbody = document.createElement('tbody');
                     let thead = document.createElement('thead');
                     let tr = document.createElement('tr');

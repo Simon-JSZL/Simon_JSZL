@@ -9,24 +9,40 @@ function compareData(StartDate, EndDate, ProductId, SideId) {
         dataType: 'JSON',
         data: {"StartDate":StartDate,"EndDate":EndDate,"ProductId":ProductId,"SideId":SideId},
         success: function(data){
-            if(data===0)
+            let myChart_total=echarts.getInstanceByDom(document.getElementById('totalFail_chart'));
+            if (myChart_total != null && myChart_total !== "" && myChart_total !== undefined) {
+                myChart_total.dispose();
+            }
+            let myChart_ser=echarts.getInstanceByDom(document.getElementById('serFail_chart'));
+            if (myChart_ser != null && myChart_ser !== "" && myChart_ser !== undefined) {
+                myChart_ser.dispose();
+            }
+            let myChart_psn=echarts.getInstanceByDom(document.getElementById('psnNum_chart'));
+            if (myChart_psn != null && myChart_psn !== "" && myChart_psn !== undefined) {
+                myChart_psn.dispose();
+            }//检查已经有实例就销毁之前的实例，防止warning
+            totalFailChart = echarts.init(document.getElementById('totalFail_chart'), 'light');
+            serFailChart = echarts.init(document.getElementById('serFail_chart'), 'light');
+            psnNumChart = echarts.init(document.getElementById('psnNum_chart'), 'light');
+            if(data.CompareData===0){//查询的时间段内没有生产车次就重置实例并alert
+                totalFailChart.clear();
+                serFailChart.clear();
+                psnNumChart.clear();
                 alert("未查询到该时间段内有印刷车次");
+            }
+            else if(data.CompareData===1){
+                totalFailChart.clear();
+                serFailChart.clear();
+                psnNumChart.clear();
+                alert("未查询到相关的生产机台");
+            }
             else{
-                let chartdetail_AvgTotal = [];
-                //let chartdetail_MachineId= [];
-                let totalFailChart = echarts.init(document.getElementById('totalFail_chart'), 'light');
-                let series=[];
-                for(let i=0;i<data.CompareData.length;i++)
-                {
-                    let MachineId=data.CompareData[i][0]['MachineId'];
-                    for(let j=1;j<data.CompareData[i].length;j++){
-                        let CurrentDate=data.CompareData[i][j]['CurrentDate'];
-                        let AvgTotal=data.CompareData[i][j]['AvgTotal'];
-                        series.push([MachineId,CurrentDate,AvgTotal]);
-                    }
-                }
-                console.log(chartdetail_AvgTotal);
-                option = {
+                totalFailChart.clear();
+                let AvgTotalData=new Array(2);//{0}=>{'2014-01-01',100}二维数组，存放一个机台一段时间内的对应作废，用于显示
+                let AvgSerData=new Array(2);
+                let AvgPsnData=new Array(2);
+                let MachineId=[];
+                option_Total = {
                     title: {
                         text: ''
                     },
@@ -60,19 +76,146 @@ function compareData(StartDate, EndDate, ProductId, SideId) {
                     },
                     yAxis: {
                         type: 'value',
-                        name: '作废数量'
+                        name: '作废总数'
                     },
-                    dataset: {
-                        dimensions: [
-                            '机台',
-                            '印刷时间',
-                            '作废总数'
-                        ]
-                    },
-                    series: series
+                    series:function(){
+                        var serie_Total=[];
+                        for(let i=0;i<data.CompareData.length;i++)//这层循环用于切换机台
+                        {
+                            MachineId.push(data.CompareData[i][0]['MachineId']);
+                            for(let j=1;j<data.CompareData[i].length;j++){//这层循环用于切换日期，每一天往数组里push一次
+                                let CurrentDate=data.CompareData[i][j]['CurrentDate'];
+                                let AvgTotal=data.CompareData[i][j]['AvgTotal'];
+                                AvgTotalData.push([CurrentDate,AvgTotal]);
+                            }
+                            let item={
+                                name:MachineId[i],//用于显示的提示
+                                type:'line',
+                                data:AvgTotalData
+                            };
+                            serie_Total.push(item);
+                            AvgTotalData=[];//一条折线的item保存完毕，清空数组用于保存下一个机台的
+                        }
+                        return serie_Total;
+                    }()
                 };
-                // 使用刚指定的配置项和数据显示图表。
-                totalFailChart.setOption(option);
+                option_Ser = {
+                    title: {
+                        text: ''
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:data[0]
+                    },
+                    grid: {
+                        left: '0%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type: 'inside',
+                            start: 0,
+                            end: 100
+                        }
+                    ],
+                    xAxis: {
+                        type: 'time',
+                        boundaryGap: false
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '严废总数'
+                    },
+                    series:function(){
+                        var serie_Ser=[];
+                        for(let i=0;i<data.CompareData.length;i++)
+                        {
+                            MachineId.push(data.CompareData[i][0]['MachineId']);
+                            for(let j=1;j<data.CompareData[i].length;j++){
+                                let CurrentDate=data.CompareData[i][j]['CurrentDate'];
+                                let AvgSer=data.CompareData[i][j]['AvgSer'];
+                                AvgSerData.push([CurrentDate,AvgSer]);
+                            }
+                            let item={
+                                name:MachineId[i],
+                                type:'line',
+                                data:AvgSerData
+                            };
+                            serie_Ser.push(item);
+                            AvgSerData=[];
+                        }
+                        return serie_Ser;
+                    }()
+                };
+                option_Psn = {
+                    title: {
+                        text: ''
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:data[0]
+                    },
+                    grid: {
+                        left: '0%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type: 'inside',
+                            start: 0,
+                            end: 100
+                        }
+                    ],
+                    xAxis: {
+                        type: 'time',
+                        boundaryGap: false
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '三仓总数'
+                    },
+                    series:function(){
+                        var serie_Psn=[];
+                        for(let i=0;i<data.CompareData.length;i++)
+                        {
+                            MachineId.push(data.CompareData[i][0]['MachineId']);
+                            for(let j=1;j<data.CompareData[i].length;j++){
+                                let CurrentDate=data.CompareData[i][j]['CurrentDate'];
+                                let AvgPsn=data.CompareData[i][j]['AvgPsn'];
+                                AvgPsnData.push([CurrentDate,AvgPsn]);
+                            }
+                            let item={
+                                name:MachineId[i],
+                                type:'line',
+                                data:AvgPsnData
+                            };
+                            serie_Psn.push(item);
+                            AvgPsnData=[];
+                        }
+                        return serie_Psn;
+                    }()
+                };
+                totalFailChart.setOption(option_Total);
+                serFailChart.setOption(option_Ser);
+                psnNumChart.setOption(option_Psn);
             }
         },
         error: function(data){

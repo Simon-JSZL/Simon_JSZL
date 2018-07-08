@@ -20,19 +20,21 @@ function sideId(){
     //$SideId=1;
     return $SideId;
 }
-function returnWagon($StartDate,$EndDate,$ProductId,$SideId){
+function CompareData($StartDate,$EndDate,$ProductId,$SideId){
     $i=0;
     $ConnInfo=new ConnectInfo();
     $CompareResult=array();
     $sql_machine="select MachineId from dbo.MachineInfo where ProductId='".$ProductId."' and SideId=".$SideId;
     $query_machine=$ConnInfo->returnQuery($sql_machine);
+    if(sqlsrv_num_rows($query_machine)==0)
+        return 1;
     while($row_machine=sqlsrv_fetch_array($query_machine)){
         $j=0;
         $MachineId=$row_machine['MachineId'];
         $CompareResult[$i][$j++]['MachineId']=$MachineId;
         $sql_fail="select CreateTime as CurrentDate,TotalFail as AvgTotal,SerFail as AvgSer,PsnNum as AvgPsn from dbo.SumFail_".$MachineId." where convert(varchar(10),CreateTime,120) between '" . $StartDate . "' and '" . $EndDate . "'";
         $query_fail=$ConnInfo->returnQuery($sql_fail);
-        if(sqlsrv_num_rows($query_fail)==false)
+        if(sqlsrv_num_rows($query_fail)==0)
             return 0;
         while($row_fail=sqlsrv_fetch_array($query_fail)){
             $CompareResult[$i][$j]['CurrentDate']=$row_fail['CurrentDate']->format('Y/m/d');
@@ -45,6 +47,6 @@ function returnWagon($StartDate,$EndDate,$ProductId,$SideId){
     }
 return $CompareResult;
 }
-$compareData=returnWagon(startDate(),endDate(),productId(),sideId());
+$compareData=CompareData(startDate(),endDate(),productId(),sideId());
 $result=array("CompareData"=>$compareData);
 echo json_encode($result);
