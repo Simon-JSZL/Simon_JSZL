@@ -17,7 +17,14 @@ include ('./common/header.html');
 			<form class="form-search">
 				<input class="input-xlarge" type="date" id="StartDate" value="2018-01-01">
 				<input class="input-xlarge" type="date" id="EndDate" value="2018-01-01">
-				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="dateSearch(getElementById('StartDate').value,getElementById('EndDate').value)">
+				<select class="input-xlarge" id="MachineId" name="选择机台">
+					<option value="" disabled selected>选择机台</option>
+					<option>J5</option>
+					<option>J6</option>
+					<option>W10#1</option>
+					<option>W10#2</option>
+				</select>
+				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="dateSearch(getElementById('StartDate').value,getElementById('EndDate').value,getElementById('MachineId').value)">
 			</form>
 		</div>
 		<div style="display:none" id="dataSearchTablesDiv">

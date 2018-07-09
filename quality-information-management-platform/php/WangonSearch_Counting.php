@@ -2,12 +2,10 @@
 include('./CountingFail_Wagon.php');
 function wagonName(){
     $WagonName=$_GET['wangonName'];
-    //$WagonName='0DZ332';
     return $WagonName;
 }
 function returnProcedure(){
     $Procedure=$_GET['procedure'];
-    //$Procedure=0;
     if($Procedure==0)
         $Procedure='W1';
     else if($Procedure==1)

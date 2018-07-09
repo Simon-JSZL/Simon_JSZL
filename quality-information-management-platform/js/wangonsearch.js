@@ -4,14 +4,15 @@ $(document).ready(function() {
     if(WagonName!=="") {
         wangonSearch(WagonName,Procedure);
     }
-   sessionStorage.WagonName="";
+    sessionStorage.WagonName="";
+    sessionStorage.Procedure="";
 });
 function wangonSearch(WagonName,Procedure) {
     wangonName=WagonName;
     procedure=Procedure;
-    if(procedure==='正面')
+    if(procedure==='凹印正面')
         procedure=1;
-    else if(procedure==='背面')
+    else if(procedure==='凹印背面')
         procedure=0;
     $.ajax({
         url: '../php/WangonSearch_Counting.php',
@@ -19,8 +20,6 @@ function wangonSearch(WagonName,Procedure) {
         dataType: 'JSON',
         data: {"wangonName":wangonName,"procedure":procedure},
         success: function(data){
-            console.log(sessionStorage);
-            console.log(data);
             if(data===0) {
                 $('div#wangonSearchTablesDiv').hide();
                 alert("未查询到车次:"+wangonName+"请重新输入车号");

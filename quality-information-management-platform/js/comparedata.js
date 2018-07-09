@@ -1,7 +1,7 @@
 function compareData(StartDate, EndDate, ProductId, SideId) {
-    if(SideId==='正面')
+    if(SideId==='凹印正面')
         SideId=1;
-    else if(SideId==='反面')
+    else if(SideId==='凹印反面')
         SideId=0;
     $.ajax({
         url: '../php/CompareData.php',
@@ -21,23 +21,35 @@ function compareData(StartDate, EndDate, ProductId, SideId) {
             if (myChart_psn != null && myChart_psn !== "" && myChart_psn !== undefined) {
                 myChart_psn.dispose();
             }//检查已经有实例就销毁之前的实例，防止warning
-            totalFailChart = echarts.init(document.getElementById('totalFail_chart'), 'light');
-            serFailChart = echarts.init(document.getElementById('serFail_chart'), 'light');
-            psnNumChart = echarts.init(document.getElementById('psnNum_chart'), 'light');
+            let Container_AvgTotal = document.getElementById('totalFail_chart');
+            let Container_AvgSer = document.getElementById('serFail_chart');
+            let Container_AvgPsn = document.getElementById('psnNum_chart');
+            let resizeMainContainer = function (Container) {
+                Container.style.width = window.innerWidth*0.845+'px';
+                Container.style.height = window.innerHeight*0.8+'px';
+            };
+            resizeMainContainer(Container_AvgTotal);
+            resizeMainContainer(Container_AvgSer);
+            resizeMainContainer(Container_AvgPsn);//获取窗体的大小动态设置div的宽高
+            let totalFailChart = echarts.init(document.getElementById('totalFail_chart'), 'light');
+            let serFailChart = echarts.init(document.getElementById('serFail_chart'), 'light');
+            let psnNumChart = echarts.init(document.getElementById('psnNum_chart'), 'light');
             if(data.CompareData===0){//查询的时间段内没有生产车次就重置实例并alert
                 totalFailChart.clear();
                 serFailChart.clear();
                 psnNumChart.clear();
+                $('div#compareDataChartsDiv').hide();
                 alert("未查询到该时间段内有印刷车次");
             }
             else if(data.CompareData===1){
                 totalFailChart.clear();
                 serFailChart.clear();
                 psnNumChart.clear();
+                $('div#compareDataChartsDiv').hide();
                 alert("未查询到相关的生产机台");
             }
             else{
-                totalFailChart.clear();
+                $('div#compareDataChartsDiv').show();
                 let AvgTotalData=new Array(2);//{0}=>{'2014-01-01',100}二维数组，存放一个机台一段时间内的对应作废，用于显示
                 let AvgSerData=new Array(2);
                 let AvgPsnData=new Array(2);
@@ -216,6 +228,21 @@ function compareData(StartDate, EndDate, ProductId, SideId) {
                 totalFailChart.setOption(option_Total);
                 serFailChart.setOption(option_Ser);
                 psnNumChart.setOption(option_Psn);
+                totalFailChart.on('click', function (params) {
+                    sessionStorage.CompareMachineId=params.seriesName;
+                    sessionStorage.CurrentDate=params.value[0];
+                    window.location.href = "DateSearch.html";
+                });
+                serFailChart.on('click', function (params) {
+                    sessionStorage.CompareMachineId=params.seriesName;
+                    sessionStorage.CurrentDate=params.value[0];
+                    window.location.href = "DateSearch.html";
+                });
+                psnNumChart.on('click', function (params) {
+                    sessionStorage.CompareMachineId=params.seriesName;
+                    sessionStorage.CurrentDate=params.value[0];
+                    window.location.href = "DateSearch.html";
+                });
             }
         },
         error: function(data){

@@ -3007,7 +3007,7 @@ ul.messagesList li span.date {
 .navbar .brand{
 	font-size: 35px;
 }
-#WangonName,#SideId,#ProductId,#Procedure,#StartDate,#EndDate{
+#WangonName,#SideId,#ProductId,#Procedure,#StartDate,#EndDate,#MachineId{
 	height: 43.6px;
 	padding: 11px 14px;
 	font-size: 16px;

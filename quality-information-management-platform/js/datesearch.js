@@ -1,10 +1,19 @@
-function dateSearch(StartDate,EndDate) {
-    let machineId=sessionStorage.MachineId;
+$(document).ready(function() {
+    let StartDate=sessionStorage.CurrentDate.replace(/\//g,"-");//sql server无法识别斜杠的日期格式，改位横杠
+    let EndDate=StartDate;
+    let MachineId=$.trim(sessionStorage.CompareMachineId);//jquery自带的trim方法
+    if(StartDate!==""&&EndDate!==""&&MachineId!=="") {
+       dateSearch(StartDate,EndDate,MachineId);
+    }
+    sessionStorage.CurrentDate="";
+    sessionStorage.CompareMachineId="";
+});
+function dateSearch(StartDate,EndDate,MachineId) {
     $.ajax({
         url: '../php/DateSearch_Counting.php',
         type: 'GET',
         dataType: 'JSON',
-        data: {"StartDate":StartDate,"EndDate":EndDate,"MachineId":machineId},
+        data: {"StartDate":StartDate,"EndDate":EndDate,"MachineId":MachineId},
         success: function(data){
             if(data===0) {
                 $('div#dataSearchTablesDiv').hide();
@@ -39,11 +48,15 @@ function dateSearch(StartDate,EndDate) {
                     tbody.appendChild(tr);
                 }
                 dailyFailTable .appendChild(tbody);
-                var chartdetail_wagon = [];
+                let chartdetail_wagon = [];
                 $.each(data.EachWangonResult, function(i, obj){
                     chartdetail_wagon.push([obj.crtime_wangon, obj.tablename, obj.totalfail_wangon, obj.serfail_wangon, obj.psnnum_wangon]);
                 });
-                var wagonChart = echarts.init(document.getElementById('wagonFail_chart'), 'light');
+                let myChart=echarts.getInstanceByDom(document.getElementById('wagonFail_chart'));
+                if (myChart != null && myChart !== "" && myChart !== undefined) {
+                    myChart.dispose();
+                }
+                let wagonChart = echarts.init(document.getElementById('wagonFail_chart'), 'light');
                 option = {
                     title: {
                         text: ''

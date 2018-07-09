@@ -17,8 +17,9 @@ include ('./common/header.html');
 			<form class="form-search">
 				<input class="input-xlarge" type="text" placeholder="输入车号" id="WangonName">
 				<select class="input-xlarge" id="Procedure">
-					<option>正面</option>
-					<option>背面</option>
+					<option value="" disabled selected>选择面次</option>
+					<option>凹印正面</option>
+					<option>凹印背面</option>
 				</select>
 				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value,getElementById('Procedure').value)">
 			</form>
