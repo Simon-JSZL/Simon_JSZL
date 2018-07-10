@@ -10,9 +10,8 @@ $(document).ready(function() {
         dataType: 'JSON',
         data: {"machineId":machineId},
         success: function(data){
-            let Procedure = data.MachineInfo.Procedure;
+            sessionStorage.Procedure = data.MachineInfo.Procedure;//sessionStroage中存放procedure，提供给wagonSearch
             let conFailTable = document.getElementById('conFailTable');
-            sessionStorage.Procedure=Procedure;
             if(data.LastDayCon===0){
                 $('table#conFailTable').find('thead').detach();
                 $('table#conFailTable').find('tbody').empty();

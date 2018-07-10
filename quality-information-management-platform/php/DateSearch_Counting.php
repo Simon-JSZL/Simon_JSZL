@@ -8,7 +8,7 @@ function endDate(){
     $EndDate=$_GET['EndDate'];
     return $EndDate;
 }
-function checkRunning($date){
+function checkRunning($date){//检测当前日期是否有生产车次
     $ConnInfo=new ConnectInfo();
         $sql_searchdate = "select count(1) as count from dbo.GeneralFail_".machineId()." where convert(varchar(10),Createtime,120) = '" . $date . "'";
         if ($ConnInfo->returnRow($sql_searchdate)['count'] != 0)
@@ -18,8 +18,13 @@ function checkRunning($date){
 }
 function machineId(){
     $MachineId=$_GET['MachineId'];
-    //$MachineId='J5';
     return $MachineId;
+}
+function  returnInfo(){
+    $machineId= MachineId();
+    $CountFailDaily = new CountingFailDaily();
+    $Info = $CountFailDaily->returnProcedure($machineId);
+    return $Info;
 }
 function datesearch_total(){
     $CountFailDaily=new CountingFailDaily();
@@ -57,10 +62,11 @@ function returnData(){
     if ($ConnInfo->returnRow($sql_searchdate)['count'] == 0)
         $result=0;
     else{
+        $Info=returnInfo();
         $totalresult=datesearch_total();
         $SingleResult=datesearch_single();
         $eachwangonresult=datesearch_eachwagon();
-        $result=array("TotalResult"=>$totalresult)+array("EachWangonResult"=>$eachwangonresult)+array("SingleResult"=>$SingleResult);
+        $result=array("MachineInfo"=>$Info)+array("TotalResult"=>$totalresult)+array("EachWangonResult"=>$eachwangonresult)+array("SingleResult"=>$SingleResult);
     }
     echo json_encode($result);
 }

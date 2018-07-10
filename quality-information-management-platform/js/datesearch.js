@@ -20,6 +20,7 @@ function dateSearch(StartDate,EndDate,MachineId) {
                 alert("未查询到该时间段内有印刷车次");
             }
             else {
+                sessionStorage.Procedure = data.MachineInfo.Procedure;
                 $('div#dataSearchTablesDiv').show();
                 document.getElementById("tablehead_totaldate_start").innerText=data.SingleResult[0].CurrentDate;
                 document.getElementById("tablehead_totaldate_end").innerText=data.SingleResult[data.SingleResult.length-1].CurrentDate;
@@ -48,11 +49,11 @@ function dateSearch(StartDate,EndDate,MachineId) {
                     tbody.appendChild(tr);
                 }
                 dailyFailTable .appendChild(tbody);
-                let chartdetail_wagon = [];
+                let chartdetail_wagon = [];//建立echarts的数据保存数组
                 $.each(data.EachWangonResult, function(i, obj){
                     chartdetail_wagon.push([obj.crtime_wangon, obj.tablename, obj.totalfail_wangon, obj.serfail_wangon, obj.psnnum_wangon]);
                 });
-                let myChart=echarts.getInstanceByDom(document.getElementById('wagonFail_chart'));
+                let myChart=echarts.getInstanceByDom(document.getElementById('wagonFail_chart'));//如果存在实例则dispose
                 if (myChart != null && myChart !== "" && myChart !== undefined) {
                     myChart.dispose();
                 }

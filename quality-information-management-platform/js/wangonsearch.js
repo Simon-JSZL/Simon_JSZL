@@ -8,12 +8,21 @@ $(document).ready(function() {
     sessionStorage.Procedure="";
 });
 function wangonSearch(WagonName,Procedure) {
-    wangonName=WagonName;
-    procedure=Procedure;
+    let wangonName=WagonName;
+    let procedure=Procedure;
+    if(procedure===""){
+        $('div#wangonSearchTablesDiv').hide();
+        alert("请选择面次");
+    }
+    else if(wangonName===""){
+        $('div#wangonSearchTablesDiv').hide();
+        alert("请输入车号");
+    }
+    else if(procedure!==""&&wangonName!==""){
     if(procedure==='凹印正面')
-        procedure=1;
+         procedure=1;
     else if(procedure==='凹印背面')
-        procedure=0;
+         procedure=0;
     $.ajax({
         url: '../php/WangonSearch_Counting.php',
         type: 'GET',
@@ -22,7 +31,7 @@ function wangonSearch(WagonName,Procedure) {
         success: function(data){
             if(data===0) {
                 $('div#wangonSearchTablesDiv').hide();
-                alert("未查询到车次:"+wangonName+"请重新输入车号");
+                alert("未查询到车次:"+wangonName+"请重新录入信息");
             }
             else {
                 $('div#wangonSearchTablesDiv').show();
@@ -124,4 +133,4 @@ function wangonSearch(WagonName,Procedure) {
             console.log(data);
         }
     });
-}
+}}
