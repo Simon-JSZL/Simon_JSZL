@@ -1,9 +1,11 @@
 $(document).ready(function() {
-    let StartDate=sessionStorage.CurrentDate//sql server无法识别斜杠的日期格式，改位横杠
-    let EndDate=StartDate;
+    let StartDate=sessionStorage.CurrentDate;//sql server无法识别斜杠的日期格式，改位横杠
     let MachineId=$.trim(sessionStorage.CompareMachineId);//jquery自带的trim方法
-    if(StartDate!==undefined)
-        StartDate=StartDate.replace(/\//g,"-");
+    let EndDate;
+    if(StartDate!==undefined) {
+        StartDate = StartDate.replace(/\//g, "-");
+        EndDate = StartDate;
+    }
     if(StartDate!==""&&EndDate!==""&&MachineId!=="") {
        dateSearch(StartDate,EndDate,MachineId);
     }
