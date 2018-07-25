@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<?php
+include ('./common/header.html');
+?>
+<!-- start: Content -->
+<div id="content" class="span10">
+    <ul class="breadcrumb">
+        <li>
+            <i class="icon-home"></i>
+            <a href="MainView.html">主界面</a>
+            <i class="icon-angle-right"></i>
+        </li>
+    </ul>
+    <div class="row-fluid">
+        <form class="form-search">
+            <input class="input-xlarge" type="date" id="StartDate" value="2018-01-01">
+            <input class="input-xlarge" type="date" id="EndDate" value="2018-01-01">
+            <select class="input-xlarge" id="MachineId" name="选择机台">
+                <option value="" disabled selected>选择机台</option>
+                <option>J5</option>
+                <option>J6</option>
+                <option>W10#1</option>
+                <option>W10#2</option>
+            </select>
+        </form>
+        <div class="form-search">
+            <div class="col-lg-6 input-xlarge">
+                <div class="input-group">
+                  <span class="input-group-addon">大于</span>
+                  <input type="text" class="form-control" id="BiggerThan" value=0 placeholder="0" aria-label="...">
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+            <div class="col-lg-6 input-xlarge">
+                <div class="input-group">
+                  <span class="input-group-addon">小于</span>
+                  <input type="text" class="form-control" id="LesserThan" value=10000 placeholder="10000" aria-label="...">
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+            <div class="col-lg-6 input-xlarge">
+                <select class="input-xlarge" id="SearchTerm" name="选择机台">
+                    <option value="" disabled selected>索引条件</option>
+                    <option>作废总数</option>
+                    <option>严废总数</option>
+                    <option>三仓数</option>
+                </select>
+            </div>
+        </div><!-- /.row -->
+    </div>
+</div>
+<?php
+include ('./footer/footer_Report.html');
+?>
+</html>

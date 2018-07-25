@@ -32,7 +32,6 @@ function datesearch_total(){
     $enddate=endDate();
     $machineId=machineId();
     $totaldetail=$CountFailDaily->runsql_total($begindate,$enddate,$machineId);
-
     return $totaldetail;
 }
 function datesearch_single(){
