@@ -22,12 +22,12 @@ function searchTerm(){
 }
 function biggerThan(){
     //$BiggerThan=$_GET['BiggerThan'];
-    $BiggerThan=200;
+    $BiggerThan="";
     return $BiggerThan;
 }
 function lesserThan(){
     //$LesserThan=$_GET['LesserThan'];
-    $LesserThan=500;
+    $LesserThan=800;
     return $LesserThan;
 }
 
@@ -53,7 +53,25 @@ function returnConditionResult($BeginDate,$EndDate,$MachineId,$BiggerThan,$Lesse
     $SearchTerm=searchTerm();
     $TableName='dbo.GeneralFail_'.$MachineId;
     $ConnInfo=new ConnectInfo();
-    if($BiggerThan<$LesserThan){
+    if($BiggerThan==""&&$LesserThan!=""){//只查小于某值
+        $sql="select COUNT(1) as ConditionNum from ".$TableName."
+where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
+and ".$SearchTerm."<=".$LesserThan;
+        $row=$ConnInfo->returnRow($sql);
+        $ConditionResult = array(
+            'ConditionNum'=>$row['ConditionNum']);
+        return $ConditionResult;
+    }
+    else if($LesserThan==""&&$BiggerThan!=""){//只查大于某值
+        $sql="select COUNT(1) as ConditionNum from ".$TableName."
+where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
+and ".$SearchTerm.">=".$BiggerThan;
+        $row=$ConnInfo->returnRow($sql);
+        $ConditionResult = array(
+            'ConditionNum'=>$row['ConditionNum']);
+        return $ConditionResult;
+    }
+    else if($BiggerThan<$LesserThan){//查某个区间内
         $sql = "select COUNT(1) as ConditionNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
 and ".$SearchTerm.">".$BiggerThan." and ".$SearchTerm."<".$LesserThan;
@@ -62,7 +80,7 @@ and ".$SearchTerm.">".$BiggerThan." and ".$SearchTerm."<".$LesserThan;
             'ConditionNum'=>$row['ConditionNum']);
         return $ConditionResult;
     }
-    else if($BiggerThan>$LesserThan){
+    else if($BiggerThan>$LesserThan){//查区间两端
         $sql1="select COUNT(1) as ConditionNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
 and ".$SearchTerm.">=".$BiggerThan;
@@ -76,7 +94,7 @@ and ".$SearchTerm."<=".$LesserThan;
             'ConditionNum2'=>$row2['ConditionNum']);
         return $ConditionResult;
     }
-    else if($BiggerThan==$LesserThan){
+    else if($BiggerThan==$LesserThan){//查固定的某个值
         $sql="select COUNT(1) as ConditionNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
 and ".$SearchTerm."=".$BiggerThan;
@@ -122,7 +140,8 @@ function returnWeekResult($WeekDate){
         $ConditionResult[$key]=returnConditionResult($FirstDate,$LastDate,machineId(),biggerThan(),lesserThan());
     }
     $Result=array("GeneralResult"=>$GeneralResult)+array("ConditionResult"=>$ConditionResult)+array("MonthResult"=>returnMonthResult());
-    echo json_encode($Result);
+    //echo json_encode($Result);
+    print_r($Result);
 }
 function returnMonthResult()
 {

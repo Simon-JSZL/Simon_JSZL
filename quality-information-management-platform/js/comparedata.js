@@ -1,3 +1,13 @@
+$('#StartDate,#EndDate').datepicker({
+    format: "yyyy-mm-dd",
+    weekStart: 0,
+    todayBtn: "linked",
+    clearBtn: true,
+    language: "zh-CN",
+    orientation: "bottom auto",
+    autoclose: true,
+    todayHighlight: true
+});
 function compareData(StartDate, EndDate, ProductId, Procedure) {
     if(ProductId===""){
         $('div#compareDataChartsDiv').hide();

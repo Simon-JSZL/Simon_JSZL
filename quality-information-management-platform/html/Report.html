@@ -14,8 +14,8 @@ include ('./common/header.html');
     </ul>
     <div class="row-fluid">
         <form class="form-search">
-            <input class="input-xlarge" type="date" id="StartDate" value="2018-01-01">
-            <input class="input-xlarge" type="date" id="EndDate" value="2018-01-01">
+            <input type="text" data-provide="datepicker" id="StartDate" class="input-xlarge" placeholder="起始月份">
+            <input type="text" data-provide="datepicker" id="EndDate" class="input-xlarge" placeholder="终止月份">
             <select class="input-xlarge" id="MachineId" name="选择机台">
                 <option value="" disabled selected>选择机台</option>
                 <option>J5</option>
@@ -28,13 +28,13 @@ include ('./common/header.html');
             <div class="col-lg-6 input-xlarge">
                 <div class="input-group">
                   <span class="input-group-addon">大于</span>
-                  <input type="text" class="form-control" id="BiggerThan" value=0 placeholder="0" aria-label="...">
+                  <input type="text" class="form-control" id="BiggerThan" placeholder="条数/大张" aria-label="...">
                 </div><!-- /input-group -->
             </div><!-- /.col-lg-6 -->
             <div class="col-lg-6 input-xlarge">
                 <div class="input-group">
                   <span class="input-group-addon">小于</span>
-                  <input type="text" class="form-control" id="LesserThan" value=10000 placeholder="10000" aria-label="...">
+                  <input type="text" class="form-control" id="LesserThan" placeholder="条数/大张" aria-label="...">
                 </div><!-- /input-group -->
             </div><!-- /.col-lg-6 -->
             <div class="col-lg-6 input-xlarge">
@@ -45,7 +45,29 @@ include ('./common/header.html');
                     <option>三仓数</option>
                 </select>
             </div>
+            <div class="col-lg-6 input-xlarge">
+                <input type="button" value="打印预览" class="btn btn-large btn-primary" onclick="displayReport(getElementById('StartDate').value,getElementById('EndDate').value,getElementById('MachineId').value,getElementById('BiggerThan').value,getElementById('LesserThan').value,getElementById('SearchTerm').value)">
+                <input type="button" value="生成报表" class="btn btn-large btn-primary" onclick="generateReport(getElementById('StartDate').value,getElementById('EndDate').value,getElementById('MachineId').value,getElementById('BiggerThan').value,getElementById('LesserThan').value,getElementById('SearchTerm').value)">
+            </div>
         </div><!-- /.row -->
+    </div>
+    <div class="row-fluid" id="compareDataChartsDiv" style="">
+        <ul class="nav nav-tabs nav-justified">
+            <li class="active">
+                <a href="#totalFail_chart" data-toggle="tab">周统计</a>
+            </li>
+            <li>
+                <a href="#serFail_chart" data-toggle="tab">月统计</a>
+            </li>
+            <li>
+                <a href="#psnNum_chart" data-toggle="tab">数据明细</a>
+            </li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div id="totalFail_chart" class="tab-pane fade in active"></div>
+            <div id="serFail_chart" class="tab-pane fade"></div>
+            <div id="psnNum_chart" class="tab-pane fade"></div>
+        </div>
     </div>
 </div>
 <?php

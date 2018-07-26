@@ -1,3 +1,13 @@
+$('#StartDate,#EndDate').datepicker({
+    format: "yyyy-mm-dd",
+    weekStart: 0,
+    todayBtn: "linked",
+    clearBtn: true,
+    language: "zh-CN",
+    orientation: "bottom auto",
+    autoclose: true,
+    todayHighlight: true
+});
 $(document).ready(function() {
     let StartDate=sessionStorage.CurrentDate;//sql server无法识别斜杠的日期格式，改位横杠
     let MachineId=$.trim(sessionStorage.CompareMachineId);//jquery自带的trim方法
