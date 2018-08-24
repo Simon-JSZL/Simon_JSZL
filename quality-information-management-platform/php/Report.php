@@ -1,33 +1,33 @@
 <?php
 include('./ConnectInfo.php');
 function startMonth(){
-    //$StartMonth=$_GET['StartMonth'];
-    $StartMonth='2014-02';
+    $StartMonth=$_GET['StartDate'];
+    //$StartMonth='2014-02';
     return $StartMonth;
 }
 function endMonth(){
-    //$EndMonth=$_GET['EndMonth'];
-    $EndMonth='2018-08';
+    $EndMonth=$_GET['EndDate'];
+    //$EndMonth='2018-08';
     return $EndMonth;
 }
 function machineId(){
-    //$MachineId=$_GET['MachineId'];
-    $MachineId='J5';
+    $MachineId=$_GET['MachineId'];
+    //$MachineId='J5';
     return $MachineId;
 }
 function searchTerm(){
-    //$SearchTerm=$_GET['SearchTerm'];
-    $SearchTerm="Totalfail";
+    $SearchTerm=$_GET['SearchTerm'];
+    //$SearchTerm="Totalfail";
     return $SearchTerm;
 }
 function biggerThan(){
-    //$BiggerThan=$_GET['BiggerThan'];
-    $BiggerThan="";
+    $BiggerThan=$_GET['BiggerThan'];
+    //$BiggerThan=800;
     return $BiggerThan;
 }
 function lesserThan(){
-    //$LesserThan=$_GET['LesserThan'];
-    $LesserThan=800;
+    $LesserThan=$_GET['LesserThan'];
+    //$LesserThan=200;
     return $LesserThan;
 }
 
@@ -37,17 +37,13 @@ function returnGeneralResult($BeginDate,$EndDate,$MachineId){//一段时间内�
     $ConnInfo=new ConnectInfo();
     $sql = "select AVG(".$SearchTerm.") as AvgValue,MIN(".$SearchTerm.") as MinValue,MAX(".$SearchTerm.") as MaxValue,COUNT(1) as TotalNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'";//返回一段时间内生产的车次总数、作废平均数、单车最多及最低作废数
-    if(sqlsrv_num_rows($ConnInfo->returnQuery($sql))==0)
-        return 0;
-    else {
-        $row=$ConnInfo->returnRow($sql);
-        $totalresult = array(
-            'AvgValue'=>$row['AvgValue'],
-            'MaxValue'=>$row['MaxValue'],
-            'MinValue'=>$row['MinValue'],
-            'TotalNum'=>$row['TotalNum']);
+    $row=$ConnInfo->returnRow($sql);
+    $totalresult = array(
+        'AvgValue'=>$row['AvgValue'],
+        'MaxValue'=>$row['MaxValue'],
+        'MinValue'=>$row['MinValue'],
+        'TotalNum'=>$row['TotalNum']);
         return $totalresult;
-    }
 }
 function returnConditionResult($BeginDate,$EndDate,$MachineId,$BiggerThan,$LesserThan){
     $SearchTerm=searchTerm();
@@ -83,10 +79,10 @@ and ".$SearchTerm.">".$BiggerThan." and ".$SearchTerm."<".$LesserThan;
     else if($BiggerThan>$LesserThan){//查区间两端
         $sql1="select COUNT(1) as ConditionNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
-and ".$SearchTerm.">=".$BiggerThan;
+and ".$SearchTerm."<=".$LesserThan;
         $sql2="select COUNT(1) as ConditionNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
-and ".$SearchTerm."<=".$LesserThan;
+and ".$SearchTerm.">=".$BiggerThan;
         $row1=$ConnInfo->returnRow($sql1);
         $row2=$ConnInfo->returnRow($sql2);
         $ConditionResult = array(
@@ -130,29 +126,39 @@ function returnWeekDate($StartMonth,$EndMonth){
     }
 return $WeekDate;
 }
-function returnWeekResult($WeekDate){
-    $GeneralResult=array();
-    $ConditionResult=array();
-    foreach($WeekDate as $key=>$value){
-        $FirstDate=$value[0];
-        $LastDate=end($value);
-        $GeneralResult[$key]=returnGeneralResult($FirstDate,$LastDate,machineId());
-        $ConditionResult[$key]=returnConditionResult($FirstDate,$LastDate,machineId(),biggerThan(),lesserThan());
-    }
-    $Result=array("GeneralResult"=>$GeneralResult)+array("ConditionResult"=>$ConditionResult)+array("MonthResult"=>returnMonthResult());
-    //echo json_encode($Result);
-    print_r($Result);
-}
-function returnMonthResult()
+function returnMonthData()
 {
+    $i=0;
     $MonthResult=array();
     for ($Month = startMonth(); strtotime($Month) <= strtotime(endMonth()); $Month = date("Y-m", (strtotime($Month . "+1 month")))) {
         $BeginDate = date("Y-m-d", (strtotime($Month)));
         $EndDate = date("Y-m-d", (strtotime($Month . "+1 month")));
         $SingleMonthResult=returnGeneralResult($BeginDate,$EndDate,machineId());
-        if($SingleMonthResult['TotalNum']!=0)
-        $MonthResult=array("".$Month.""=>$SingleMonthResult);
+        if($SingleMonthResult['TotalNum']!=0){
+        $MonthResult[$i]=$SingleMonthResult;
+        $MonthResult[$i]['Date']=$Month;
+        $i++;
+        }
     }
 return $MonthResult;
 }
-returnWeekResult(returnWeekDate(startMonth(),endMonth()));
+function returnDetail(){
+
+}
+function returnResult($WeekDate){
+    $i=0;
+    $GeneralResult=array();
+    $ConditionResult=array();
+    foreach($WeekDate as $key=>$value){
+        $FirstDate=$value[0];
+        $LastDate=end($value);
+        $GeneralResult[$i]=returnGeneralResult($FirstDate,$LastDate,machineId());
+        $GeneralResult[$i]["Date"]=$key;
+        $ConditionResult[$i]=returnConditionResult($FirstDate,$LastDate,machineId(),biggerThan(),lesserThan());
+        $i++;
+    }
+    $Result=array("GeneralResult"=>$GeneralResult)+array("ConditionResult"=>$ConditionResult)+array("MonthResult"=>returnMonthData());
+    echo json_encode($Result);
+    //print_r($Result);
+}
+returnResult(returnWeekDate(startMonth(),endMonth()));
