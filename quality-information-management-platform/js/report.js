@@ -35,11 +35,11 @@ function createWeekTable(BiggerThan,LesserThan,SearchName,data){
     let tbody = document.createElement('tbody');
     let thead = document.createElement('thead');
     let tr = document.createElement('tr');
-    if (BiggerThanInt === "" && LesserThanInt !== "") {
+    if (BiggerThan === "" && LesserThan !== "") {
         ConditionTitle = SearchName + "小于" + LesserThanInt + "的车次数";
         tableHead = ["时间", "生产车次（万）", "单车最低"+SearchName, "单车最高"+SearchName, "平均"+SearchName, ConditionTitle];
     }
-    else if (LesserThanInt === "" && BiggerThanInt !== "") {
+    else if (LesserThan === "" && BiggerThan !== "") {
         ConditionTitle = SearchName + "大于" + BiggerThanInt + "的车次数";
         tableHead = ["时间", "生产车次（万）", "单车最低"+SearchName, "单车最高"+SearchName, "平均"+SearchName, ConditionTitle];
     }
