@@ -7,19 +7,15 @@ $('#StartDate,#EndDate').datepicker({
     autoclose: true,
     todayHighlight: true
 });
-function generateReport(StartDate,EndDate,MachineId,BiggerThan,LesserThan,SearchTerm){
-    $.ajax({
-        url: '../php/Report.php',
-        type: 'GET',
-        dataType: 'JSON',
-        data: {"StartDate":StartDate,"EndDate":EndDate,"MachineId":MachineId,"BiggerThan":BiggerThan,"LesserThan":LesserThan,"SearchTerm":SearchTerm},
-        success: function(data){
-
-        },
-        error: function(data){
-            console.log(data);
-        }
-    });
+function generateReport(StartDate,EndDate,MachineId,SearchName){
+    let wb = XLSX.utils.book_new();
+    let elt_weekTable = document.getElementById('weekTable');
+    let elt_monthTable = document.getElementById('monthTable');
+    let ws_weekTable = XLSX.utils.table_to_sheet(elt_weekTable);
+    let ws_monthTable = XLSX.utils.table_to_sheet(elt_monthTable);
+    XLSX.utils.book_append_sheet(wb, ws_weekTable, "周统计");
+    XLSX.utils.book_append_sheet(wb, ws_monthTable, "月统计");
+    XLSX.writeFile(wb,MachineId+SearchName+'报告.xlsx');
 }
 function createWeekTable(BiggerThan,LesserThan,SearchName,data){
     let weekTable = document.getElementById('weekTable');//获得表
