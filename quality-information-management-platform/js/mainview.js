@@ -5,7 +5,7 @@ function gotoWagonSearch(WagonName){
 $(document).ready(function() {
     let machineId=sessionStorage.MachineId;
     $.ajax({
-        url: '../php/MainView_Counting.php',
+        url: '../php/MainView.php',
         type: 'GET',
         dataType: 'JSON',
         data: {"machineId":machineId},

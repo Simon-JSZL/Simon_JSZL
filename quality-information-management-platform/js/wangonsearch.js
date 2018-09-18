@@ -24,7 +24,7 @@ function wangonSearch(WagonName,Procedure) {
     else if(procedure==='凹印背面')
          procedure=0;
     $.ajax({
-        url: '../php/WangonSearch_Counting.php',
+        url: '../php/WangonSearch.php',
         type: 'GET',
         dataType: 'JSON',
         data: {"wangonName":wangonName,"procedure":procedure},

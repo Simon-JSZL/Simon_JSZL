@@ -29,7 +29,7 @@ function dateSearch(StartDate,EndDate,MachineId) {
     }
     else{
         $.ajax({
-            url: '../php/DateSearch_Counting.php',
+            url: '../php/DateSearch.php',
             type: 'GET',
             dataType: 'JSON',
             data: {"StartDate":StartDate,"EndDate":EndDate,"MachineId":MachineId},
