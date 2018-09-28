@@ -67,7 +67,7 @@ where ImageId=".$row['ImageId'];
             $sql_image="select TypImage".$i." as Image from dbo.TypicalImage_".$machineId." where WangonName = '".$wangonName."'";
             $query_image=$ConnInfo->returnQuery($sql_image);
             $row_image = sqlsrv_fetch_array($query_image);
-            $TypResult[$i-1]['Image'] = base64_encode(hex2bin($header.($row_image['Image'])));
+            $TypResult[$i-1]['Image'] = (hex2bin($header.($row_image['Image'])));
         }
         return $TypResult;
     }

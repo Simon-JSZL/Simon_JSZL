@@ -88,6 +88,12 @@ function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在�
     }
     return false;
 }
+function checkStr($str,$str2)
+{
+    $pattern_07T='^[0-9]{2}[a-zA-Z]{2}[0-9]{3}^';
+    $pattern='^[0-9]{2}[a-zA-Z]{2}[0-9]{3}^';
+    return preg_match($str2,$str)?1:0;
+}
 function ExtractSumFail(){
     $EachWagonFail=ExtractComFail();
     $CommDate=new commondate();
@@ -187,7 +193,6 @@ values('".$index[$temp]['WangonName']."','".$index[$temp][0]."','".$index[$temp]
     }
 return $faillist;
 }
-
 function ExtractConFail(){//查找并向服务器端数据库插入连续废
     $extractCon=new commondate();
     $lastday=$extractCon->findlastday();
@@ -253,7 +258,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                         $sql_getImage1 = "select ErrorImage as image from dbo." . $row_eachwagon['tablename'] . " where [index]=" . $confail[0]['Id'];
                         $query_getImage1 = sqlsrv_query($conn_Jitai, $sql_getImage1, $params, $options);
                         $image1 = bin2hex(sqlsrv_fetch_array($query_getImage1)['image']);
-                        $sql_getImage2 = "select ErrorImage as image from dbo." . $row_eachwagon['tablename'] . " where [index]=" . $confail[count($confail)-1]['Id'];
+                        $sql_getImage2 = "select ErrorImage as image from dbo." . $row_eachwagon['tablename'] . " where [index]=" . $confail[count($confail)-2]['Id'];
                         $query_getImage2 = sqlsrv_query($conn_Jitai, $sql_getImage2, $params, $options);
                         $image2 = bin2hex(sqlsrv_fetch_array($query_getImage2)['image']);
                         $confail_image[$j]=array(
@@ -284,7 +289,6 @@ values(@@IDENTITY,'".$confail_image[$temp]['ConImage1']."','".$confail_image[$te
         }
     }
 }
-
 function ExtractTypicalFail(){
     $extractTyp=new commondate();
     $lastday=$extractTyp->findlastday();

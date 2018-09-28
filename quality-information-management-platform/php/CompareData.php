@@ -1,5 +1,5 @@
 <?php
-include('./CountingFail_Daily.php');
+include('./ConnectInfo.php');
 function startDate(){
     $StartDate=$_GET['StartDate'];
     //$StartDate='2014-06-20';

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<img id="testImage">
+</body>
+<script type="text/javascript" charset="utf8" src="../js/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '../php/test.php',
+            type: 'GET',
+            dataType: 'JSON',
+            data: {},
+            success: function(data){
+                let image = document.getElementById('testImage');
+                    image.src = "data:image/bmp;base64," + data.TypFail[0].Image;
+            },
+            error: function(data){
+                console.log(data);
+            }
+        });
+    });
+</script>
+</html>
