@@ -50,23 +50,30 @@ function WagonName(){
 }
 function ReturnData($MachineId,$WagonName){
     $i=1;
+    $Data=array();
+    $ReturnData=array();
     $header=hex2bin("424d56010100000000003600000028000000b40000007800000001002000000000000000000000000000000000000000000000000000");
     $conn=Connect2Machine($MachineId);
     $params = array();
     $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
-    $sql="select PSN,FormatPos,Reserve2 as Grade,Reserve3 as Dim,ErrorImage from ".$WagonName;
+    $sql="select [Index] as ID,PSN,FormatPos,Reserve2 as Grade,Reserve3 as Dim,ErrorImage from ".$WagonName;
     $query= sqlsrv_query($conn, $sql, $params, $options);
     while($row=sqlsrv_fetch_array($query)){
-        $ReturnData[]=array(
-            'ID'=>$i++,
+        $Data[]=array(
+            'ID'=>$row['ID'],
             'Psn'=>$row['PSN'],
             'FormatPos'=>$row['FormatPos'],
             'Grade'=>$row['Grade'],
-            'Dim'=>$row['Dim'],
-            'Image'=>base64_encode($header.$row['ErrorImage'])
+            'Dim'=>$row['Dim']
+            //'Image'=>base64_encode($header.$row['ErrorImage'])
         );
     }
-    print_r($ReturnData);
-    return $ReturnData;
+    $ReturnData=array(
+        "draw" => 1,
+        "recordsTotal"=>count($Data),
+        "recordsFiltered"=>count($Data),
+        "data"=>$Data
+    );
+    echo json_encode($ReturnData);
 }
 ReturnData(MachineId(),WagonName());

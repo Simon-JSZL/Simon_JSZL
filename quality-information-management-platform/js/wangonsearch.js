@@ -7,6 +7,11 @@ $(document).ready(function() {
     sessionStorage.WagonName="";
     sessionStorage.Procedure="";
 });
+function detailView(WagonName,Procedure){
+    sessionStorage.DetailView_WagonName=WagonName;
+    sessionStorage.DetailView_Procedure=Procedure;
+    window.open('DetailView.html');
+}
 function wangonSearch(WagonName,Procedure) {
     let wangonName=WagonName;
     let procedure=Procedure;

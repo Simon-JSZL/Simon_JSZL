@@ -22,6 +22,7 @@ include ('./common/header.html');
 					<option>凹印背面</option>
 				</select>
 				<input type="button" value="查询" class="btn btn-large btn-primary" onclick="wangonSearch(getElementById('WangonName').value,getElementById('Procedure').value)">
+				<input type="button" value="明细" class="btn btn-large btn-primary" onclick="detailView(getElementById('WangonName').value,getElementById('Procedure').value)">
 			</form>
 		</div>
 		<div style="display:none" id="wangonSearchTablesDiv">
