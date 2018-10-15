@@ -8,9 +8,25 @@ $(document).ready(function() {
     sessionStorage.Procedure="";
 });
 function detailView(WagonName,Procedure){
+    if(Procedure===""){
+        $('div#wangonSearchTablesDiv').hide();
+        alert("请选择面次");
+    }
+    else if(WagonName===""){
+        $('div#wangonSearchTablesDiv').hide();
+        alert("请输入车号");
+    }
+    else if(Procedure!==""&&WagonName!==""){
+    if(Procedure==='凹印正面')
+        Procedure=1;
+    else if(Procedure==='凹印背面')
+        Procedure=0;
     sessionStorage.DetailView_WagonName=WagonName;
     sessionStorage.DetailView_Procedure=Procedure;
-    window.open('DetailView.html');
+    let height=window.screen.height*0.1;
+    let width=window.screen.width*0.15;
+    window.open('DetailView.html', 'DetailView','height=560,width=1000,top='+height+',left='+width+',location=no,resizable=no,toolbar=no');
+    }
 }
 function wangonSearch(WagonName,Procedure) {
     let wangonName=WagonName;

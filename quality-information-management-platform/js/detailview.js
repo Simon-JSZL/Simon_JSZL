@@ -1,12 +1,15 @@
 $(document).ready(function() {
+    let WagonName=sessionStorage.WagonName;
+    let Procedure=sessionStorage.DetailView_Procedure;
+    let Title=document.getElementById('DetailViewTitle');
+    Title.innerText="缺陷明细-"+WagonName.toUpperCase( );
     $('#WangonTable').DataTable( {
-        dom: "Bfrtip",
-        "scrollY":"500px",
+        "scrollY":"501px",
         "scrollCollapse":true,
         "info":false,
-        "ordering":true,
         "paging":false,
         "searching":false,
+        "bScrollCollapse" : true,
         "language":{
             lengthMenu:"显示_MENU_条记录",
             loadingRecords:"载入中...",
@@ -16,27 +19,38 @@ $(document).ready(function() {
         "serverSide": true,
         "ajax": {
             "url": "../php/DetailView.php",
-            "type": "GET"
+            "type": "GET",
+            "dataType": "JSON",
+            "data": {"WagonName":WagonName,"Procedure":Procedure},
         },
         "columns": [
             { "data": "ID" },
-            { "data": "Psn" },
             { "data": "FormatPos" },
             { "data": "Grade"},
             { "data": "Dim"}
         ]
     } );
-    var table=$('#WangonTable').DataTable();
+    let table=$('#WangonTable').DataTable();
     $('#WangonTable tbody').on('click','tr',function(){
-        if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
+        table.$('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        let data = table.row( this ).data();
+        //$('image#DetailViewImage').empty();
+        showImage(data['IpAddress'],WagonName,data['ID']);
     });
 });
-function alert(){
-
+function showImage(IpAddress,WagonName,ID){
+    $.ajax({
+        url: '../php/DetailView_Image.php',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {"IpAddress":IpAddress,"WagonName":WagonName,"ID":ID},
+        success: function(data){
+            image = document.getElementById('DetailViewImage');
+            image.src = "data:image/bmp;base64," + data.Image;
+        },
+        error: function(data){
+            console.log(data);
+        }
+    });
 }
