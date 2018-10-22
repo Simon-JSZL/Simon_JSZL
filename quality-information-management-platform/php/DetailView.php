@@ -42,7 +42,37 @@ function IpAddress(){
     $IpAddress=$row_IpAddress['IpAddress'];
     return $IpAddress;
 }
+function order ( $request, $columns )
+{
+    $order = '';
+    if ( isset($request['order']) && count($request['order']) ) {
+        $orderBy = array();
+        $dtColumns = self::pluck( $columns, 'dt' );
+        for ( $i=0, $ien=count($request['order']) ; $i<$ien ; $i++ ) {
+            // Convert the column index into the column data property
+            $columnIdx = intval($request['order'][$i]['column']);
+            $requestColumn = $request['columns'][$columnIdx];
+            $columnIdx = array_search( $requestColumn['data'], $dtColumns );
+            $column = $columns[ $columnIdx ];
+            if ( $requestColumn['orderable'] == 'true' ) {
+                $dir = $request['order'][$i]['dir'] === 'asc' ?
+                    'ASC' :
+                    'DESC';
+                $orderBy[] = '`'.$column['db'].'` '.$dir;
+            }
+        }
+        if ( count( $orderBy ) ) {
+            $order = 'ORDER BY '.implode(', ', $orderBy);
+        }
+    }
+    return $order;
+}
 function ReturnData(){
+    $columns = array(
+        array( 'db' => '[Index]',   'dt' => 0 ),
+        array( 'db' => 'FormatPos', 'dt' => 1 ),
+        array( 'db' => 'Reserve2',  'dt' => 2 ),
+        array( 'db' => 'Reserve3',  'dt' => 3 ));
     $WagonName='T'.WagonName();
     $Data=array();
     $conn=Connect2Machine();
@@ -61,7 +91,9 @@ function ReturnData(){
         );
     }
     $ReturnData=array(
-        "draw" => 1,
+        "draw" =>isset ($_GET['draw'])?
+        intval( $_GET['draw'] ) :
+        0,
         "recordsTotal"=>count($Data),
         "recordsFiltered"=>count($Data),
         "data"=>$Data

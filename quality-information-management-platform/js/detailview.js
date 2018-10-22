@@ -1,6 +1,6 @@
 $(document).ready(function() {
     let WagonName=sessionStorage.WagonName;
-    let Procedure=sessionStorage.DetailView_Procedure;
+    let Procedure=sessionStorage.Procedure;
     let Title=document.getElementById('DetailViewTitle');
     Title.innerText="缺陷明细-"+WagonName.toUpperCase( );
     $('#WangonTable').DataTable( {
@@ -10,6 +10,7 @@ $(document).ready(function() {
         "paging":false,
         "searching":false,
         "bScrollCollapse" : true,
+        "ordering":true,
         "language":{
             lengthMenu:"显示_MENU_条记录",
             loadingRecords:"载入中...",
@@ -24,10 +25,10 @@ $(document).ready(function() {
             "data": {"WagonName":WagonName,"Procedure":Procedure},
         },
         "columns": [
-            { "data": "ID" },
-            { "data": "FormatPos" },
-            { "data": "Grade"},
-            { "data": "Dim"}
+            {"data":"ID"},
+            {"data":"FormatPos"},
+            {"data":"Grade"},
+            {"data":"Dim"}
         ]
     } );
     let table=$('#WangonTable').DataTable();
@@ -35,7 +36,7 @@ $(document).ready(function() {
         table.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
         let data = table.row( this ).data();
-        //$('image#DetailViewImage').empty();
+        $('image#DetailViewImage').empty();
         showImage(data['IpAddress'],WagonName,data['ID']);
     });
 });
@@ -53,4 +54,7 @@ function showImage(IpAddress,WagonName,ID){
             console.log(data);
         }
     });
+}
+function saveImage(IpAddress,WagonName){
+    
 }
