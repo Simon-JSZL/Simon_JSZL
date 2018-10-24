@@ -15,8 +15,6 @@ function createImage(MachineId,WagonName){
     });
 }
 function saveBase64AsFile(base64, fileName){
-    var link = document.createElement("a");
-    link.setAttribute("href", base64);
-    link.setAttribute("download", fileName);
-    link.click();
+    let image = "data:image/bmp;base64," + base64;
+    download(image,fileName,"image/bmp");
 }

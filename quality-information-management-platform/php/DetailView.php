@@ -14,6 +14,14 @@ function WagonName(){
     //$WagonName='0DZ114';
     return $WagonName;
 }
+function pluck ( $a, $prop )
+{
+    $out = array();
+    for ( $i=0, $len=count($a) ; $i<$len ; $i++ ) {
+        $out[] = $a[$i][$prop];
+    }
+    return $out;
+}
 function Connect2Machine()
 {
     $uid = "";
@@ -46,39 +54,32 @@ function order ( $request, $columns )
 {
     $order = '';
     if ( isset($request['order']) && count($request['order']) ) {
-        $orderBy = array();
-        $dtColumns = self::pluck( $columns, 'dt' );
+        $column=array();
+        $dir=array();
         for ( $i=0, $ien=count($request['order']) ; $i<$ien ; $i++ ) {
             // Convert the column index into the column data property
             $columnIdx = intval($request['order'][$i]['column']);
             $requestColumn = $request['columns'][$columnIdx];
-            $columnIdx = array_search( $requestColumn['data'], $dtColumns );
             $column = $columns[ $columnIdx ];
             if ( $requestColumn['orderable'] == 'true' ) {
                 $dir = $request['order'][$i]['dir'] === 'asc' ?
                     'ASC' :
                     'DESC';
-                $orderBy[] = '`'.$column['db'].'` '.$dir;
             }
         }
-        if ( count( $orderBy ) ) {
-            $order = 'ORDER BY '.implode(', ', $orderBy);
-        }
+        $order=" order by ".$column." $dir";
     }
     return $order;
 }
 function ReturnData(){
-    $columns = array(
-        array( 'db' => '[Index]',   'dt' => 0 ),
-        array( 'db' => 'FormatPos', 'dt' => 1 ),
-        array( 'db' => 'Reserve2',  'dt' => 2 ),
-        array( 'db' => 'Reserve3',  'dt' => 3 ));
+    $columns = array('[Index]','FormatPos','Reserve2','Reserve3');
+    $order = order( $_GET, $columns );
     $WagonName='T'.WagonName();
     $Data=array();
     $conn=Connect2Machine();
     $params = array();
     $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
-    $sql="select [Index] as ID,FormatPos,Reserve2 as Grade,Reserve3 as Dim from ".$WagonName;
+    $sql="select [Index] as ID,FormatPos,Reserve2 as Grade,Reserve3 as Dim from ".$WagonName.$order;
     $query= sqlsrv_query($conn, $sql, $params, $options);
     while($row=sqlsrv_fetch_array($query)){
         $Data[]=array(

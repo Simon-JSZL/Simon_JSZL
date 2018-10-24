@@ -55,6 +55,3 @@ function showImage(IpAddress,WagonName,ID){
         }
     });
 }
-function saveImage(IpAddress,WagonName){
-    
-}
