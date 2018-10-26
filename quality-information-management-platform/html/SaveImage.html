@@ -2,27 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>缺陷图像下载</title>
 </head>
 <body>
 <div class="row-fluid">
-    <form class="form-search">
-        <input class="input-xlarge" type="text" placeholder="输入车号" id="WagonName">
-        <select class="input-xlarge" id="MachineId">
+    <form action="../php/SaveImage.php" name="zips" method="post" style="padding-left: 30%;padding-top:20%">
+        <input  type="text" placeholder="输入车号" name="WagonName" style="height: 30px;line-height: 30px;width: 200px">
+        <select  name="MachineId" style="height: 30px;line-height: 30px;width: 200px">
             <option value="" disabled selected>选择机台</option>
             <option>J5</option>
             <option>J6</option>
             <option>W10#1</option>
             <option>W10#2</option>
         </select>
-        <input type="button" value="存图" class="btn btn-large btn-primary" onclick="createImage(getElementById('MachineId').value,getElementById('WagonName').value)">
-    </form>
+        <input type="submit" name="createZip" value="下载文件" style="height: 30px;line-height: 30px;width: 100px"/>
+        </form>
 </div>
 <script type="text/javascript" charset="utf8" src="../js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" charset="utf8" src="../js/bootstrap.min.js"></script>
-<script type="text/javascript" charset="utf8" src="../js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf8" src="../js/custom.js"></script>
-<script type="text/javascript" charset="utf8" src="../js/download.js"></script>
-<script type="text/javascript" charset="utf8" src="../js/savaimage.js"></script>
 </body>
 </html>
