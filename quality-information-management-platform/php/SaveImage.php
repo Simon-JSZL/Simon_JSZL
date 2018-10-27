@@ -91,7 +91,7 @@ function ReturnData()
     $conn = Connect2Machine();
     $params = array();
     $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
-    $sql = "select [Index] as Id,ErrorImage from " . "T" . $WagonName ;
+    $sql = "select [Index] as Id,FormatPos,PSN,ErrorImage from " . "T" . $WagonName ;
     $query= sqlsrv_query($conn, $sql, $params, $options);
     @ $row_count = sqlsrv_num_rows($query);
     if($row_count==0){
@@ -103,7 +103,7 @@ function ReturnData()
         $FileList=array();
         while ($row = sqlsrv_fetch_array($query)) {
             $Image = hex2bin($header) . $row['ErrorImage'];
-            $file = IMAGE_FOLDER . $row['Id'].'.jpg';
+            $file = IMAGE_FOLDER . $row['Id'].'--'.$row['FormatPos'].'K--'.$row['PSN'].'Z'.'.jpg';
             file_put_contents($file, $Image);
             $FileList[]=$file;
         }
