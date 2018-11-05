@@ -2,7 +2,6 @@
 include('./ConnectInfo.php');
 function Procedure(){
     $Procedure=$_GET['Procedure'];
-    //$Procedure=1;
     if($Procedure==0)
         $Procedure='W1';
     else if($Procedure==1)
@@ -11,7 +10,6 @@ function Procedure(){
 }
 function WagonName(){
     $WagonName=$_GET['WagonName'];
-    //$WagonName='0DZ114';
     return $WagonName;
 }
 function pluck ( $a, $prop )
@@ -88,7 +86,6 @@ function ReturnData(){
             'Grade'=>($row['Grade']==1?"一般":"严重"),
             'Dim'=>$row['Dim'],
             "IpAddress"=>trim(IpAddress())
-            //'Image'=>base64_encode($header.$row['ErrorImage'])
         );
     }
     $ReturnData=array(

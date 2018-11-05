@@ -2,22 +2,18 @@
 include('./ConnectInfo.php');
 function startDate(){
     $StartDate=$_GET['StartDate'];
-    //$StartDate='2014-06-20';
     return $StartDate;
 }
 function endDate(){
     $EndDate=$_GET['EndDate'];
-    //$EndDate='2014-06-24';
     return $EndDate;
 }
 function productId(){
     $ProductId=$_GET['ProductId'];
-    //$ProductId='9607T';
     return $ProductId;
 }
 function sideId(){
     $SideId=$_GET['SideId'];
-    //$SideId=1;
     return $SideId;
 }
 function CompareData($StartDate,$EndDate,$ProductId,$SideId){

@@ -1,33 +1,33 @@
 <?php
 include('./ConnectInfo.php');
 function startMonth(){
-    $StartMonth=$_GET['StartDate'];
-    //$StartMonth='2014-02';
+    //$StartMonth=$_GET['StartDate'];
+    $StartMonth='2018-02';
     return $StartMonth;
 }
 function endMonth(){
-    $EndMonth=$_GET['EndDate'];
-    //$EndMonth='2018-08';
+    //$EndMonth=$_GET['EndDate'];
+    $EndMonth='2018-08';
     return $EndMonth;
 }
 function machineId(){
-    $MachineId=$_GET['MachineId'];
-    //$MachineId='J5';
+    //$MachineId=$_GET['MachineId'];
+    $MachineId='J5';
     return $MachineId;
 }
 function searchTerm(){
-    $SearchTerm=$_GET['SearchTerm'];
-    //$SearchTerm="Totalfail";
+    //$SearchTerm=$_GET['SearchTerm'];
+    $SearchTerm="Totalfail";
     return $SearchTerm;
 }
 function biggerThan(){
-    $BiggerThan=$_GET['BiggerThan'];
-    //$BiggerThan=800;
+    //$BiggerThan=$_GET['BiggerThan'];
+    $BiggerThan=800;
     return $BiggerThan;
 }
 function lesserThan(){
-    $LesserThan=$_GET['LesserThan'];
-    //$LesserThan=200;
+    //$LesserThan=$_GET['LesserThan'];
+    $LesserThan=200;
     return $LesserThan;
 }
 
@@ -37,26 +37,29 @@ function returnGeneralResult($BeginDate,$EndDate,$MachineId){//一段时间内�
     $ConnInfo=new ConnectInfo();
     $sql = "select AVG(".$SearchTerm.") as AvgValue,MIN(".$SearchTerm.") as MinValue,MAX(".$SearchTerm.") as MaxValue,COUNT(1) as TotalNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'";//返回一段时间内生产的车次总数、作废平均数、单车最多及最低作废数
-    $row=$ConnInfo->returnRow($sql);
+    $row = $ConnInfo->returnRow($sql);
     $totalresult = array(
-        'AvgValue'=>$row['AvgValue'],
-        'MaxValue'=>$row['MaxValue'],
-        'MinValue'=>$row['MinValue'],
-        'TotalNum'=>$row['TotalNum']);
-        return $totalresult;
+        'AvgValue' => $row['AvgValue'],
+        'MaxValue' => $row['MaxValue'],
+        'MinValue' => $row['MinValue'],
+        'TotalNum' => $row['TotalNum']);
+    return $totalresult;
 }
 function returnConditionResult($BeginDate,$EndDate,$MachineId,$BiggerThan,$LesserThan){
+    $ConditionResult=array();
     $SearchTerm=searchTerm();
     $TableName='dbo.GeneralFail_'.$MachineId;
     $ConnInfo=new ConnectInfo();
-    if($BiggerThan==""&&$LesserThan!=""){//只查小于某值
+    if($BiggerThan==""&&$LesserThan==""){//没有条件查询
+        return 0;
+    }
+    else if($BiggerThan==""&&$LesserThan!=""){//只查小于某值
         $sql="select COUNT(1) as ConditionNum from ".$TableName."
 where convert(varchar(10),Createtime,120) between '" . $BeginDate . "' and '" . $EndDate . "'
 and ".$SearchTerm."<=".$LesserThan;
         $row=$ConnInfo->returnRow($sql);
         $ConditionResult = array(
             'ConditionNum'=>$row['ConditionNum']);
-        return $ConditionResult;
     }
     else if($LesserThan==""&&$BiggerThan!=""){//只查大于某值
         $sql="select COUNT(1) as ConditionNum from ".$TableName."
@@ -65,7 +68,6 @@ and ".$SearchTerm.">=".$BiggerThan;
         $row=$ConnInfo->returnRow($sql);
         $ConditionResult = array(
             'ConditionNum'=>$row['ConditionNum']);
-        return $ConditionResult;
     }
     else if($BiggerThan<$LesserThan){//查某个区间内
         $sql = "select COUNT(1) as ConditionNum from ".$TableName."
@@ -74,7 +76,6 @@ and ".$SearchTerm.">".$BiggerThan." and ".$SearchTerm."<".$LesserThan;
         $row=$ConnInfo->returnRow($sql);
         $ConditionResult = array(
             'ConditionNum'=>$row['ConditionNum']);
-        return $ConditionResult;
     }
     else if($BiggerThan>$LesserThan){//查区间两端
         $sql1="select COUNT(1) as ConditionNum from ".$TableName."
@@ -88,7 +89,6 @@ and ".$SearchTerm.">=".$BiggerThan;
         $ConditionResult = array(
             'ConditionNum1'=>$row1['ConditionNum'],
             'ConditionNum2'=>$row2['ConditionNum']);
-        return $ConditionResult;
     }
     else if($BiggerThan==$LesserThan){//查固定的某个值
         $sql="select COUNT(1) as ConditionNum from ".$TableName."
@@ -97,9 +97,8 @@ and ".$SearchTerm."=".$BiggerThan;
         $row=$ConnInfo->returnRow($sql);
         $ConditionResult = array(
             'ConditionNum'=>$row['ConditionNum']);
-        return $ConditionResult;
     }
-return true;
+    return $ConditionResult;
 }
 function checkRunning($date){//检测当前日期是否有生产车次
     $ConnInfo=new ConnectInfo();
@@ -111,8 +110,7 @@ function checkRunning($date){//检测当前日期是否有生产车次
 }
 function returnWeekDate($StartMonth,$EndMonth){
     $WeekDate=array();
-    for($Month=$StartMonth;strtotime($Month)<=strtotime($EndMonth);$Month=date("Y-m", (strtotime($Month."+1 month"))))
-    {
+    for($Month=$StartMonth;strtotime($Month)<=strtotime($EndMonth);$Month=date("Y-m", (strtotime($Month."+1 month")))) {
         $i=1;
         for($Day=date("Y-m-d",(strtotime($Month)));$Day<date("Y-m-d",(strtotime($Month."+1 month")));$Day=date("Y-m-d", (strtotime($Day."+1 day")))){
             $DayOfWeek=date("w",strtotime($Day));
@@ -141,9 +139,6 @@ function returnMonthData()
         }
     }
 return $MonthResult;
-}
-function returnDetail(){
-
 }
 function returnResult($WeekDate){
     $i=0;
