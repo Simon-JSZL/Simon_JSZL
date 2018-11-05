@@ -10,7 +10,9 @@ class ConnectInfo
         $this->conn = sqlsrv_connect($this->dbHost, $this->connectionInfo);
         if ($this->conn == false) {
             echo "连接至服务器数据库失败";
-            die(print_r(sqlsrv_errors(), true));}
+            die(print_r(sqlsrv_errors(), true));
+        }
+        return $this->conn;
     }
     public function returnQuery($sql){
         return sqlsrv_query($this->conn, $sql, $this->params, $this->options);

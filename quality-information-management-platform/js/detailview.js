@@ -23,6 +23,9 @@ $(document).ready(function() {
             "type": "GET",
             "dataType": "JSON",
             "data": {"WagonName":WagonName,"Procedure":Procedure},
+            error: function () {
+                alert("未获取到该车数据，请确认查询机台已开机并且数据库状态正常");
+            }
         },
         "columns": [
             {"data":"ID"},
