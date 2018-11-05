@@ -5,7 +5,7 @@ class ConnectInfo
     public $conn;
     public $params = array();
     public $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
-    public $connectionInfo = array("UID" =>"", "PWD" => "", "Database" => "AnalyzedData", 'CharacterSet' => "utf-8");
+    public $connectionInfo = array("UID" =>"sa", "PWD" => "123", "Database" => "AnalyzedData", 'CharacterSet' => "utf-8");
     function __construct(){
         $this->conn = sqlsrv_connect($this->dbHost, $this->connectionInfo);
         if ($this->conn == false) {

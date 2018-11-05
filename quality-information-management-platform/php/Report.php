@@ -1,33 +1,27 @@
 <?php
 include('./ConnectInfo.php');
 function startMonth(){
-    //$StartMonth=$_GET['StartDate'];
-    $StartMonth='2018-02';
+    $StartMonth=$_GET['StartDate'];
     return $StartMonth;
 }
 function endMonth(){
-    //$EndMonth=$_GET['EndDate'];
-    $EndMonth='2018-08';
+    $EndMonth=$_GET['EndDate'];
     return $EndMonth;
 }
 function machineId(){
-    //$MachineId=$_GET['MachineId'];
-    $MachineId='J5';
+    $MachineId=$_GET['MachineId'];
     return $MachineId;
 }
 function searchTerm(){
-    //$SearchTerm=$_GET['SearchTerm'];
-    $SearchTerm="Totalfail";
+    $SearchTerm=$_GET['SearchTerm'];
     return $SearchTerm;
 }
 function biggerThan(){
-    //$BiggerThan=$_GET['BiggerThan'];
-    $BiggerThan=800;
+    $BiggerThan=$_GET['BiggerThan'];
     return $BiggerThan;
 }
 function lesserThan(){
-    //$LesserThan=$_GET['LesserThan'];
-    $LesserThan=200;
+    $LesserThan=$_GET['LesserThan'];
     return $LesserThan;
 }
 

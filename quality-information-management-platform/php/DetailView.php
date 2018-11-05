@@ -22,8 +22,8 @@ function pluck ( $a, $prop )
 }
 function Connect2Machine()
 {
-    $uid = "";
-    $pwd = "";
+    $uid = "sa";
+    $pwd = "123";
     $dbName = 'DZVS';
     $charset = 'utf-8';
     $connectionInfo = array("UID" => $uid, "PWD" => $pwd, "Database" => $dbName, 'CharacterSet' => $charset);
