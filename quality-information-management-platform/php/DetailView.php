@@ -12,16 +12,14 @@ function WagonName(){
     $WagonName=$_GET['WagonName'];
     return $WagonName;
 }
-function pluck ( $a, $prop )
-{
+function pluck ($a,$prop){
     $out = array();
-    for ( $i=0, $len=count($a) ; $i<$len ; $i++ ) {
+    for ($i=0,$len=count($a);$i<$len;$i++) {
         $out[] = $a[$i][$prop];
     }
     return $out;
 }
-function Connect2Machine()
-{
+function Connect2Machine(){
     $uid = "sa";
     $pwd = "123";
     $dbName = 'DZVS';
@@ -48,19 +46,17 @@ function IpAddress(){
     $IpAddress=$row_IpAddress['IpAddress'];
     return $IpAddress;
 }
-function order ( $request, $columns )
-{
-    $order = '';
-    if ( isset($request['order']) && count($request['order']) ) {
+function order ($request,$columns){
+    $order='';
+    if (isset($request['order'])&&count($request['order'])){
         $column=array();
         $dir=array();
-        for ( $i=0, $ien=count($request['order']) ; $i<$ien ; $i++ ) {
-            // Convert the column index into the column data property
-            $columnIdx = intval($request['order'][$i]['column']);
-            $requestColumn = $request['columns'][$columnIdx];
-            $column = $columns[ $columnIdx ];
-            if ( $requestColumn['orderable'] == 'true' ) {
-                $dir = $request['order'][$i]['dir'] === 'asc' ?
+        for ($i=0,$ien=count($request['order']);$i<$ien;$i++){
+            $columnIdx=intval($request['order'][$i]['column']);
+            $requestColumn=$request['columns'][$columnIdx];
+            $column=$columns[$columnIdx];
+            if ($requestColumn['orderable']=='true'){
+                $dir=$request['order'][$i]['dir'] === 'asc' ?
                     'ASC' :
                     'DESC';
             }
@@ -70,15 +66,15 @@ function order ( $request, $columns )
     return $order;
 }
 function ReturnData(){
-    $columns = array('[Index]','FormatPos','Reserve2','Reserve3');
-    $order = order( $_GET, $columns );
+    $columns=array('[Index]','FormatPos','Reserve2','Reserve3');
+    $order=order( $_GET, $columns );
     $WagonName='T'.WagonName();
     $Data=array();
     $conn=Connect2Machine();
-    $params = array();
-    $options = array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+    $params=array();
+    $options=array("Scrollable" => SQLSRV_CURSOR_KEYSET);
     $sql="select [Index] as ID,FormatPos,Reserve2 as Grade,Reserve3 as Dim from ".$WagonName.$order;
-    $query= sqlsrv_query($conn, $sql, $params, $options);
+    $query=sqlsrv_query($conn,$sql,$params,$options);
     while($row=sqlsrv_fetch_array($query)){
         $Data[]=array(
             'ID'=>$row['ID'],
@@ -89,8 +85,8 @@ function ReturnData(){
         );
     }
     $ReturnData=array(
-        "draw" =>isset ($_GET['draw'])?
-        intval( $_GET['draw'] ) :
+        "draw" =>isset($_GET['draw'])?
+        intval($_GET['draw']) :
         0,
         "recordsTotal"=>count($Data),
         "recordsFiltered"=>count($Data),

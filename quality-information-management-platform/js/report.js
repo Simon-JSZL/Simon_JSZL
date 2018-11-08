@@ -27,7 +27,7 @@ function createWeekTable(BiggerThan,LesserThan,SearchName,data){
     let ConditionTitle = "";//查询结果的conditionResult为单值时使用的conditionName
     let ConditionTitle1 = "";//查询结果的conditionResult为双值时使用的conditionName
     let ConditionTitle2 = "";
-    let tableHead = "";//表头
+    let tableHead = "";//表头的填充内容
     let tbody = document.createElement('tbody');
     let thead = document.createElement('thead');
     let tr = document.createElement('tr');
@@ -55,7 +55,7 @@ function createWeekTable(BiggerThan,LesserThan,SearchName,data){
         ConditionTitle = SearchName + "等于" + BiggerThanInt + "的车次数";
         tableHead = ["时间", "生产车次（万）", "单车最低"+SearchName, "单车最高"+SearchName, "平均"+SearchName, ConditionTitle];
     }
-    for (let i = 0; i < tableHead.length; i++) {
+    for (let i = 0; i < tableHead.length; i++) {//将生成的表头内容填充至表头中
         headerTxt = document.createTextNode(tableHead[i]);
         th = document.createElement('th');
         th.setAttribute("class", "text-center");
@@ -63,8 +63,8 @@ function createWeekTable(BiggerThan,LesserThan,SearchName,data){
         tr.appendChild(th);
         thead.appendChild(tr);
     }
-    weekTable.appendChild(thead);
-    for (let i = 0; i < data.GeneralResult.length; i++) {
+    weekTable.appendChild(thead);//附加表头
+    for (let i = 0; i < data.GeneralResult.length; i++) {//填充tbody
         let row_year = data.GeneralResult[i].Date.substr(0, 4);
         let row_month = data.GeneralResult[i].Date.substr(5, 2);
         let row_week = data.GeneralResult[i].Date.substr(9, 2);
@@ -132,7 +132,7 @@ function createMonthTable(BiggerThan,LesserThan,SearchName,data){
     monthTable.appendChild(tbody);
 }
 function displayReport(StartDate,EndDate,MachineId,BiggerThan,LesserThan,SearchName){
-    if(StartDate===""||EndDate===""||MachineId===""||SearchName==="") {
+    if(StartDate===""||EndDate===""||MachineId===""||SearchName==="") {//必要的查询条件检查
         alert("请输入完整的查询条件");
     }
     else {
