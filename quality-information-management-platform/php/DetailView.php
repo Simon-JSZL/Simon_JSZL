@@ -26,8 +26,7 @@ function Connect2Machine(){
     $charset = 'utf-8';
     $connectionInfo = array("UID" => $uid, "PWD" => $pwd, "Database" => $dbName, 'CharacterSet' => $charset);
     $conn=sqlsrv_connect(IpAddress(),$connectionInfo);
-    if($conn == false)
-    {
+    if($conn == false) {
         sqlsrv_close($conn);
         exit;
     }

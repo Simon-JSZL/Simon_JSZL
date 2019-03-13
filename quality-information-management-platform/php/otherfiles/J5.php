@@ -2,10 +2,10 @@
 class commondate{
     public $dbHost_Jitai = "localhost";
     public $dbHost_Server = "localhost";
-    public $uid_Jitai = "";
-    public $uid_Server = "";
-    public $pwd_Jitai = "";
-    public $pwd_Server = "";
+    public $uid_Jitai = "sa";
+    public $uid_Server = "sa";
+    public $pwd_Jitai = "123";
+    public $pwd_Server = "123";
     public $dbName_Jitai = 'DZVS';
     public $dbName_Server = 'AnalyzedData';
     public $conn_Jitai;
@@ -24,8 +24,8 @@ class commondate{
     {
         $this->machineId = 'J5';
         $this->procedure = 'W2';
-        //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
-        $this->currentdate = '2014-06-20';                                          //获取前一天日期
+        $this->currentdate = date("Y-m-d", strtotime("-1 day"));
+        //$this->currentdate = '2019-02-18';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->connectionInfo_MB = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => 'MB', 'CharacterSet' => $this->charset);
@@ -47,7 +47,7 @@ class commondate{
     {
         $count=0;
         $lastday=$this->currentdate;
-        $stopdate=strtotime("2014-01-01 00:00:00");
+        $stopdate=strtotime("2019-01-01 00:00:00");
         while(1)
         {
             $sql_searchlastday = "select count(1) as count from dbo.Indextable
@@ -73,11 +73,13 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
         $sql = "select top 1 MacroTitle as MacroName from ".$MacroTable."
                   where MacroID=".$MacroId."
                   order by ID DESC";
-        $query = sqlsrv_query($this->conn_MB, $sql, $this->params, $this->options);
-        while ($row = sqlsrv_fetch_array($query)) {
+        if($MacroId==0)
+            return "走版/折角";
+        else{
+            $query = sqlsrv_query($this->conn_MB, $sql, $this->params, $this->options);
+            $row = sqlsrv_fetch_array($query);
             return $row['MacroName'];
         }
-    return $MacroId;
     }
 }
 function isInSameCol($sheet1,$sheet2){//检查两开是否在同一列，如在返回列数，不在返回false
@@ -109,7 +111,7 @@ function ExtractSumFail(){
     asort($count_MaxM);
     end($count_MaxK);
     end($count_MaxM);
-    $EachDayFail=array("CreatTime"=>$CurrentDate,
+    $EachDayFail=array("CreateTime"=>$CurrentDate,
         "AvgTotal"=>array_sum($avg_Total)/$WagonNum,
         "AvgSer"=>array_sum($avg_Ser)/$WagonNum,
         "AvgPsn"=>array_sum($avg_Psn)/$WagonNum,
@@ -121,7 +123,7 @@ function ExtractSumFail(){
     reset($count_MaxK);
     reset($count_MaxM);
     $sql="insert into SumFail_".$CommDate->machineId."([CreateTime],[TotalFail],[SerFail],[PsnNum],[MaxK],[MaxM]) 
-values('".$EachDayFail['CreatTime']."',".$EachDayFail['AvgTotal'].",".$EachDayFail['AvgSer'].",".$EachDayFail['AvgPsn'].",".$EachDayFail['MaxK'].",'".$EachDayFail['MaxM']."')";
+values('".$EachDayFail['CreateTime']."',".$EachDayFail['AvgTotal'].",".$EachDayFail['AvgSer'].",".$EachDayFail['AvgPsn'].",".$EachDayFail['MaxK'].",'".$EachDayFail['MaxM']."')";
     sqlsrv_query($CommDate->conn_Server, $sql, $CommDate->params, $CommDate->options);
     return $EachDayFail;
 }
@@ -215,7 +217,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
             unset($confail);
             $confail[0]=array(0,0,0);
             $i=0;
-            $count=0;
+            $count=1;
             $sql_confail = "select PSN as psn,FormatPos as pos,MacroIndex as area,[Index] as Id from dbo." . $row_eachwagon['tablename'] ." order by PSN";
             $query_confail = sqlsrv_query($conn_Jitai, $sql_confail, $params, $options);
             while($row_confail = sqlsrv_fetch_array($query_confail))
@@ -228,7 +230,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                 {
                     continue;
                 }
-                else if(($confail[$i][0]+3>=$row_confail['psn'])){
+                else if($confail[$i][0]+3>=$row_confail['psn']){
                     if((isInSameCol($confail[$i][1],$row_confail['pos'])==true)&&($confail[$i][2]==$row_confail['area'])){
                         $count++;
                         $i++;
@@ -244,7 +246,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                     if($count<10){
                         unset($confail);
                         $i=0;
-                        $count=0;
+                        $count=1;
                         $confail[$i]=$row_confail;
                     }
                     else if($count>=10){//符合连续废条件
@@ -267,7 +269,7 @@ where convert(varchar(10),Createtime,120) = '" . $lastday . "'";
                         $j++;
                         unset($confail);
                         $i=0;
-                        $count=0;
+                        $count=1;
                         $confail[$i]=$row_confail;
                     }
                 }
@@ -338,9 +340,10 @@ values ('".$typimage[$temp]['WangonName']."','".$typimage[$temp][0]."','".$typim
             sqlsrv_query($conn_Server, $sql_insertImage, $params, $options);
     }
 }
-ExtractSumFail();
+/**ExtractSumFail();
 ExtractComFail();
 ExtractConFail();
-ExtractTypicalFail();
+ExtractTypicalFail();**/
+ExtractConFail();
 
 
