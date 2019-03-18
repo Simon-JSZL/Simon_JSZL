@@ -1,5 +1,6 @@
 <?php
 include('./CountingFail_Daily.php');
+include ('./ReturnProcedure.php');
 function MachineId(){
     $MachineId=$_GET['machineId'];
     //$MachineId='J5';
@@ -27,8 +28,7 @@ function find5days()                                                            
 }
 function  returnInfo(){
     $machineId= MachineId();
-    $CountFailDaily = new CountingFailDaily();
-    $Info = $CountFailDaily->returnProcedure($machineId);
+    $Info = returnProcedure($machineId);
     return $Info;
 }
 function fivedaycount_total(){
