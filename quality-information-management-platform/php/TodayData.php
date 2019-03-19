@@ -2,8 +2,8 @@
 include ('./CountingFail_Wagon.php');
 include ('./ReturnProcedure.php');
 function MachineId(){
-    //$MachineId=$_GET['machineId'];
-    $MachineId='J5';
+    $MachineId=$_GET['machineId'];
+    //$MachineId='J5';
     return $MachineId;
 }
 function FindLastWagon($MachineId)
@@ -29,7 +29,7 @@ function LastWagonFails(){
     $LastWagonGenFail = $WagonFail->generalfail($MachineId,$WagonName);
     $LastWagonConFail = $WagonFail->confail($MachineId,$WagonName);
     $LastWagonTypFail = $WagonFail->typfail($MachineId,$WagonName);
-    $result = array("LastWagonGenFail"=>$LastWagonGenFail) + array("LastWagonConFail"=>$LastWagonConFail)+array("LastWagonTypFail"=>$LastWagonTypFail);
+    $result = array("WagonName"=>$WagonName)+array("LastWagonGenFail"=>$LastWagonGenFail) + array("LastWagonConFail"=>$LastWagonConFail)+array("LastWagonTypFail"=>$LastWagonTypFail);
     return $result;
 }
 //print_r(FindLastWagon(MachineId()));

@@ -125,14 +125,9 @@ function wangonSearch(WagonName,Procedure) {
                     conFailTable .appendChild(thead);
                     for (let i = 0; i < data.ConFail.length; i++) {
                         let tr = document.createElement('tr');
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
-                        tr.appendChild(document.createElement('td'));
+                        for (let temp =0; temp<8;temp++){
+                            tr.appendChild(document.createElement('td'));
+                        }
                         tr.cells[0].appendChild(document.createTextNode(i + 1));
                         tr.cells[1].appendChild(document.createTextNode(data.ConFail[i].ConNum));
                         tr.cells[2].appendChild(document.createTextNode(data.ConFail[i].StartPsn));
