@@ -703,12 +703,7 @@ ul.messages li .message {
        -moz-border-radius: 0px;
 	        border-radius: 0px; 	
 }
-.jitai{
-        font-size: 40px;
-		position: absolute;
-		top: 50px;
-		left: 10px;
-}
+
 .breadcrumb span {
 	text-shadow: 1px 1px 0px #fff;
 }
@@ -757,6 +752,7 @@ ul.messages li .message {
 	padding: 10px;
 	position: relative;
 	margin-bottom: 28px;
+	width: 28.076923076923077%
 }
 	
 	.statbox .number {
@@ -2998,4 +2994,28 @@ ul.messagesList li span.date {
 	height: 43.6px;
 	padding: 11px 14px;
 	font-size: 16px;
+}
+.statbox_jitai{
+	font-size: 40px;
+	position: absolute;
+	top: 50px;
+	left: 10px;
+}
+.statbox_startdate{
+	font-size: 25px;
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+}
+.statbox_wagonname{
+	font-size: 35px;
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+}
+.statbox_enddate{
+	font-size: 25px;
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
 }

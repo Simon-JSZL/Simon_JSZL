@@ -11,6 +11,9 @@ $(document).ready(function() {
         data: {"machineId":machineId},
         success: function(data){
             sessionStorage.Procedure = data.MachineInfo.Procedure;//sessionStroage中存放procedure，提供给wagonSearch
+            document.getElementById("startDate").innerText = data.SingleResult[0].CurrentDate;
+            document.getElementById("endDate").innerText = data.SingleResult[4].CurrentDate;
+            //给statbox填充内容
             let conFailTable = document.getElementById('conFailTable');
             if(data.LastDayCon===0){
                 $('table#conFailTable').find('thead').detach();
@@ -61,8 +64,6 @@ $(document).ready(function() {
                 conFailTable .appendChild(tbody);
             }
             document.getElementById("tablehead_lastday").innerText=data.SingleResult[4].CurrentDate;
-            document.getElementById("tablehead_totaldate_start").innerText=data.SingleResult[0].CurrentDate;
-            document.getElementById("tablehead_totaldate_end").innerText=data.SingleResult[4].CurrentDate;
             document.getElementById("total_AVGFail").innerText=data.TotalResult.AVGTotal_total;
             document.getElementById("total_AVGSer").innerText=data.TotalResult.AVGSer_total;
             document.getElementById("total_AVGPsn").innerText=data.TotalResult.AVGPsn_total;

@@ -12,9 +12,9 @@ include ('./common/header.html');
         </li>
     </ul>
     <div class="row-fluid">
-        <div class="span3 statbox blue noMargin">
-            <div><font face="微软雅黑">机台:</font></div>
-            <div class="jitai">
+        <div class="span4 statbox blueDark noMargin">
+            <div><font size = 5px face="微软雅黑">机台:</font></div>
+            <div class="statbox_jitai">
                 <script>
                     var machineId=sessionStorage.MachineId;
                     document.write(machineId);
@@ -26,10 +26,13 @@ include ('./common/header.html');
 				    ?>
             </div>
         </div>
+        <div class="span4 statbox red noMargin">
+            <div><font size = 5px face="微软雅黑">上车车号:</font></div>
+            <div class="statbox_wagonname" id ="wagonName"></div></div>
     </div>
     <div class="row-fluid">
         <div class="span12 statbox-extendheader blue noMargin">
-            <div class="text-center"><strong>上车作废信息(<span id ="WagonName"></span>)</strong></div>
+            <div class="text-center"><strong>上车作废信息</strong></div>
         </div>
         <table class="table table-bordered">
             <thead>
@@ -61,6 +64,7 @@ include ('./common/header.html');
             </table>
         </div>
     </div>
+
     <div class="row-fluid">
         <div class="span12 statbox-extendheader blue noMargin">
             <div class="text-center"><strong>上车典型废信息</strong></div>

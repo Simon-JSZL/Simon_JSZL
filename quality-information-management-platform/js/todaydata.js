@@ -8,7 +8,7 @@ $(document).ready(function() {
         success: function(data){
             let conFailTable = document.getElementById('conFailTable');
             let typFailTable = document.getElementById('typFailTable');
-            document.getElementById("WagonName").innerText = data.WagonName;
+            document.getElementById("wagonName").innerText = data.WagonName;
             document.getElementById("TotalFail").innerText = data.LastWagonGenFail['TotalFail'];
             document.getElementById("SerFail").innerText = data.LastWagonGenFail['SerFail'];
             document.getElementById("PsnNum").innerText = data.LastWagonGenFail['PsnNum'];
@@ -90,7 +90,6 @@ $(document).ready(function() {
                 }
                 typFailTable.appendChild(tbody);
             }
-
             },
         error: function(data){
         console.log(data);

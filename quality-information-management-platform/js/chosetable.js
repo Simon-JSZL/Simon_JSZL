@@ -46,6 +46,6 @@ $(document).ready(function() {
         //获取某列（从0列开始计数）的值
         let MachineId = $("table#WangonTable").find("tr").eq(row).find("td").eq(0).text();
         sessionStorage.MachineId=MachineId;
-        window.location.href="MainView.html";
+        window.location.href="TodayData.html";
     });
 });

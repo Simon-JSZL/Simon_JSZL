@@ -2,12 +2,13 @@
 include ('./CountingFail_Wagon.php');
 include ('./ReturnProcedure.php');
 function MachineId(){
-    $MachineId=$_GET['machineId'];
-    //$MachineId='J5';
+    //$MachineId=$_GET['machineId'];
+    $MachineId='J5';
     return $MachineId;
 }
-function FindLastWagon($MachineId)
+function FindLast2Wagon($MachineId)
 {
+    $WagonInfo = [];
     $ConnInfo = new ConnectInfo();
     $Procedure = returnProcedure($MachineId)['Procedure'];
     $ProcedureName = "";
@@ -16,15 +17,20 @@ function FindLastWagon($MachineId)
         case 1:$ProcedureName = "W2";break;
         default:break;
     }
-    $sql = "select WangonName as WagonName from dbo.AllIndex where CreateTime_".$ProcedureName." =
-    (select top 1 CreateTime_".$ProcedureName." from dbo.AllIndex where MachineId_".$ProcedureName." = '".$MachineId."'
+    $sql = "select WangonName as WagonName, CreateTime_".$ProcedureName." as CreateTime from dbo.AllIndex where CreateTime_".$ProcedureName." in
+    (select top 2 CreateTime_".$ProcedureName." from dbo.AllIndex where MachineId_".$ProcedureName." = '".$MachineId."'
                                           order by CreateTime_".$ProcedureName." DESC )";
-    $WagonName = $ConnInfo->returnRow($sql)['WagonName'];
-    return $WagonName;
+    $query = $ConnInfo->returnQuery($sql);
+    while($row = sqlsrv_fetch_array($query)) {
+        $WagonInfo[] = $row;
+        //$WagonNames[]['CreateTime'] = $row[1];
+    }
+    //print_r($WagonInfo[1]['CreateTime']);
+    return $WagonInfo;
 }
 function LastWagonFails(){
     $MachineId = MachineId();
-    $WagonName = FindLastWagon($MachineId);
+    $WagonName = FindLast2Wagon($MachineId)[1]['WagonName'];
     $WagonFail = new CountingFailWagon();
     $LastWagonGenFail = $WagonFail->generalfail($MachineId,$WagonName);
     $LastWagonConFail = $WagonFail->confail($MachineId,$WagonName);
@@ -32,6 +38,7 @@ function LastWagonFails(){
     $result = array("WagonName"=>$WagonName)+array("LastWagonGenFail"=>$LastWagonGenFail) + array("LastWagonConFail"=>$LastWagonConFail)+array("LastWagonTypFail"=>$LastWagonTypFail);
     return $result;
 }
-//print_r(FindLastWagon(MachineId()));
-//print_r(LastWagonFails());
-echo json_encode(LastWagonFails());
+
+//FindLast2Wagon(MachineId());
+print_r(LastWagonFails());
+//echo json_encode(LastWagonFails());

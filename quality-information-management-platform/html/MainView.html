@@ -12,10 +12,10 @@ include ('./common/header.html');
 					<i class="icon-angle-right"></i>
 				</li>
 			</ul>
-			<div class="row-fluid">
-				<div class="span3 statbox blue noMargin">
-					<div><font face="微软雅黑">机台:</font></div>
-                    <div class="jitai">
+			<div>
+				<div class="span4 statbox blueDark noMargin">
+					<div><font size = 5px face="微软雅黑">机台:</font></div>
+                    <div class="statbox_jitai">
 					<script>
 					var machineId=sessionStorage.MachineId;
 					document.write(machineId);
@@ -26,7 +26,13 @@ include ('./common/header.html');
 					echo date("Y/m/d");
 				    ?>
                     </div>
-				</div>	
+				</div>
+                <div class="span4 statbox red noMargin">
+                    <div><font size = 5px face ="微软雅黑">最近5天生产日期</font></div>
+                    <div class="statbox_startdate" id = "startDate"></div>
+                    <div style = font-size:25px;position:absolute;bottom:10px;left:47%;>至</div>
+                    <div class="statbox_enddate" id = "endDate"></div>
+                </div>
 			</div>
         <div class="row-fluid">
             <div class="span12 statbox-extendheader blue noMargin">
@@ -37,7 +43,7 @@ include ('./common/header.html');
         </div>
         <div class="row-fluid">
             <div class="span12 statbox-extendheader blue noMargin">
-                <div class="text-center"><strong>近期作废统计(<span id="tablehead_totaldate_start"></span>~<span id="tablehead_totaldate_end"></span>)</strong></div>
+                <div class="text-center"><strong>最近5个工作日作废统计</strong></div>
             </div>
             <table class="table table-bordered">
                 <thead>
@@ -62,7 +68,7 @@ include ('./common/header.html');
         </div>
         <div class="row-fluid">
             <div class="span12 statbox-extendheader blue noMargin">
-                <div class="text-center"><strong>近期作废明细</strong></div>
+                <div class="text-center"><strong>最近5个工作日作废明细</strong></div>
             </div>
             <table class="table table-bordered">
                 <thead>
