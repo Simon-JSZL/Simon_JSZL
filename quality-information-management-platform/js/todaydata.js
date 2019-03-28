@@ -8,7 +8,8 @@ $(document).ready(function() {
         success: function(data){
             let conFailTable = document.getElementById('conFailTable');
             let typFailTable = document.getElementById('typFailTable');
-            document.getElementById("wagonName").innerText = data.WagonName;
+            document.getElementById("WagonName").innerText = data.WagonName;
+            document.getElementById("CreateTime").innerText = data.CreateTime;
             document.getElementById("TotalFail").innerText = data.LastWagonGenFail['TotalFail'];
             document.getElementById("SerFail").innerText = data.LastWagonGenFail['SerFail'];
             document.getElementById("PsnNum").innerText = data.LastWagonGenFail['PsnNum'];
@@ -89,6 +90,46 @@ $(document).ready(function() {
                     tbody.appendChild(tr);
                 }
                 typFailTable.appendChild(tbody);
+            }
+            if(data.AcrossTypFails!==0){
+                $('div#acrossTypFailDiv').show();
+                $('table#acrossTypFailTable').find('tbody').detach();
+                let acrossTypFailTable = document.getElementById('acrossTypFailTable');
+                let tbody = document.createElement('tbody');
+                for(let i = 0;i<data.AcrossTypFails.length;i++){
+                    let tr1 = document.createElement('tr');
+                    let tr2 = document.createElement('tr');
+                    for(temp = 0; temp<7;temp++){
+                        tr1.appendChild(document.createElement('td'));
+                    }
+                    for(temp = 0; temp<6;temp++){
+                        tr2.appendChild(document.createElement('td'));
+                    }
+                    tr1.cells[0].appendChild(document.createTextNode(i+1));
+                    tr1.cells[0].setAttribute("rowspan","2");
+                    tr1.cells[1].appendChild(document.createTextNode(data.AcrossTypFails[i].WagonName1));
+                    tr1.cells[2].appendChild(document.createTextNode(data.AcrossTypFails[i].CreateTime1));
+                    tr1.cells[3].appendChild(document.createTextNode(data.AcrossTypFails[i].Max_Pos1));
+                    tr1.cells[4].appendChild(document.createTextNode(data.AcrossTypFails[i].Max_Area1));
+                    tr1.cells[5].appendChild(document.createTextNode(data.AcrossTypFails[i].Max_Num1));
+                    //tr2.cells[0].appendChild(document.createTextNode(i+1));
+                    tr2.cells[0].appendChild(document.createTextNode(data.AcrossTypFails[i].WagonName2));
+                    tr2.cells[1].appendChild(document.createTextNode(data.AcrossTypFails[i].CreateTime2));
+                    tr2.cells[2].appendChild(document.createTextNode(data.AcrossTypFails[i].Max_Pos2));
+                    tr2.cells[3].appendChild(document.createTextNode(data.AcrossTypFails[i].Max_Area2));
+                    tr2.cells[4].appendChild(document.createTextNode(data.AcrossTypFails[i].Max_Num2));
+                    let image1 = document.createElement('img');
+                    let image2 = document.createElement('img');
+                    image1.src = "data:image/bmp;base64," + data.AcrossTypFails[i].Image1;
+                    image2.src = "data:image/bmp;base64," + data.AcrossTypFails[i].Image2;
+                    tr1.cells[6].appendChild(image1);
+                    tr2.cells[5].appendChild(image2);
+                    tr1.cells[6].setAttribute("width","180px");
+                    tr2.cells[5].setAttribute("width","180px");
+                    tbody.appendChild(tr1);
+                    tbody.appendChild(tr2);
+                    }
+                acrossTypFailTable.appendChild(tbody);
             }
             },
         error: function(data){

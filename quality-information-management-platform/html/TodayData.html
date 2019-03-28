@@ -16,19 +16,21 @@ include ('./common/header.html');
             <div><font size = 5px face="微软雅黑">机台:</font></div>
             <div class="statbox_jitai">
                 <script>
-                    var machineId=sessionStorage.MachineId;
+                    let machineId=sessionStorage.MachineId;
                     document.write(machineId);
                 </script>
             </div>
             <div class="title">
                 <?php
 					echo date("Y/m/d");
-				    ?>
+				?>
             </div>
         </div>
         <div class="span4 statbox red noMargin">
             <div><font size = 5px face="微软雅黑">上车车号:</font></div>
-            <div class="statbox_wagonname" id ="wagonName"></div></div>
+            <div class="statbox_wagonname" id ="WagonName"></div>
+            <div class = "title">印刷时间:<span id = "CreateTime"></span></div>
+        </div>
     </div>
     <div class="row-fluid">
         <div class="span12 statbox-extendheader blue noMargin">
@@ -64,7 +66,6 @@ include ('./common/header.html');
             </table>
         </div>
     </div>
-
     <div class="row-fluid">
         <div class="span12 statbox-extendheader blue noMargin">
             <div class="text-center"><strong>上车典型废信息</strong></div>
@@ -76,6 +77,24 @@ include ('./common/header.html');
                 <th class="text-center">区域</th>
                 <th class="text-center">作废条数</th>
                 <th class="text-center">平均面积</th>
+                <th class="text-center">图像</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row-fluid" id="acrossTypFailDiv" style="display:none">
+        <div class="span12 statbox-extendheader red noMargin">
+            <div class="text-center"><strong>警告：上车可能存在跨万典型废</strong></div>
+        </div>
+        <table class="table table-bordered text-center" id="acrossTypFailTable">
+            <thead>
+            <tr>
+                <th class="text-center">编号</th>
+                <th class="text-center">车号</th>
+                <th class="text-center">印刷时间</th>
+                <th class="text-center">开位</th>
+                <th class="text-center">区域</th>
+                <th class="text-center">作废条数</th>
                 <th class="text-center">图像</th>
             </tr>
             </thead>
