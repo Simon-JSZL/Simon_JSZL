@@ -1,7 +1,7 @@
 $(document).ready(function() {
     let machineId=sessionStorage.MachineId;
     $.ajax({
-        url: '../php/TodayData.php',
+        url: '../php/LastWagonData.php',
         type: 'GET',
         dataType: 'JSON',
         data: {"machineId":machineId},

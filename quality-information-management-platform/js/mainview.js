@@ -1,5 +1,6 @@
-function gotoWagonSearch(WagonName){
-    sessionStorage.WagonName=WagonName;
+function gotoWagonSearch(WagonName, Procedure){
+    sessionStorage.WagonName = WagonName;
+    sessionStorage.Procedure = Procedure;
     window.location.href = "WangonSearch.html";
 }
 $(document).ready(function() {
@@ -172,7 +173,8 @@ $(document).ready(function() {
             myChart.setOption(option);
             myChart.on('click', function (params) {
                 let WagonName=params.value[1];
-                gotoWagonSearch(WagonName)
+                let Procedure = data.MachineInfo.Procedure;//sessionStroage中存放procedure，提供给wagonSearch
+                gotoWagonSearch(WagonName, Procedure)
             });
         },
         error: function(data){

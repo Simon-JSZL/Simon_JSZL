@@ -24,8 +24,8 @@ class commondate{
     {
         $this->machineId = 'J5';
         $this->procedure = 'W2';
-        $this->currentdate = date("Y-m-d", strtotime("-1 day"));
-        //$this->currentdate = '2019-02-18';                                          //获取前一天日期
+        //$this->currentdate = date("Y-m-d", strtotime("-1 day"));
+        $this->currentdate = '2019-02-10';                                          //获取前一天日期
         $this->connectionInfo_Jitai = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => $this->dbName_Jitai, 'CharacterSet' => $this->charset);
         $this->connectionInfo_Server = array("UID" => $this->uid_Server, "PWD" => $this->pwd_Server, "Database" => $this->dbName_Server, 'CharacterSet' => $this->charset);
         $this->connectionInfo_MB = array("UID" => $this->uid_Jitai, "PWD" => $this->pwd_Jitai, "Database" => 'MB', 'CharacterSet' => $this->charset);
@@ -340,10 +340,10 @@ values ('".$typimage[$temp]['WangonName']."','".$typimage[$temp][0]."','".$typim
             sqlsrv_query($conn_Server, $sql_insertImage, $params, $options);
     }
 }
-/**ExtractSumFail();
+ExtractSumFail();
 ExtractComFail();
 ExtractConFail();
-ExtractTypicalFail();**/
-ExtractConFail();
+ExtractTypicalFail();
+//ExtractConFail();
 
 

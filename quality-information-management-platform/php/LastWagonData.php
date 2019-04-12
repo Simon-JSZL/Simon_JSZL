@@ -23,15 +23,14 @@ function FindLast2Wagon($MachineId)
     $query = $ConnInfo->returnQuery($sql);
     while($row = sqlsrv_fetch_array($query)) {
         $WagonInfo[] = $row;
-        //$WagonNames[]['CreateTime'] = $row[1];
     }
     //print_r($WagonInfo[1]['CreateTime']);
     return $WagonInfo;
 }
 function LastWagonFails(){
     $MachineId = MachineId();
-    $WagonName = FindLast2Wagon($MachineId)[count(FindLast2Wagon($MachineId))-1]['WagonName'];
-    $CreateTime = FindLast2Wagon($MachineId)[count(FindLast2Wagon($MachineId))-1]['CreateTime']->format('H:i');
+    $WagonName = FindLast2Wagon($MachineId)[1]['WagonName'];
+    $CreateTime = FindLast2Wagon($MachineId)[1]['CreateTime']->format('H:i');
     $WagonFail = new CountingFailWagon();
     $LastWagonGenFail = $WagonFail->generalfail($MachineId,$WagonName);
     $LastWagonConFail = $WagonFail->confail($MachineId,$WagonName);
@@ -42,7 +41,7 @@ function LastWagonFails(){
 function AcrossTypFail(){
     $MachineId = MachineId();
     $AcrossTypFails = array();
-    if(count(FindLast2Wagon($MachineId))<=2)
+    if(count(FindLast2Wagon($MachineId))<2)
         return 0;
     else{
     $WagonInfo1 =  FindLast2Wagon($MachineId)[0];
@@ -77,7 +76,10 @@ function AcrossTypFail(){
             }
         }
     }
-    return $AcrossTypFails;
+    if(count($AcrossTypFails)>0)
+        return $AcrossTypFails;
+    else
+        return 0;
     }
 }
 //FindLast2Wagon(MachineId());
