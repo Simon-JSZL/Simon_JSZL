@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<?php
+include ('./common/header.html');
+?>
+<!-- start: Content -->
+<div id="content" class="span10">
+    <ul class="breadcrumb">
+        <li>
+            <i class="icon-home"></i>
+            <a href="ChoseTable.html">选择机台</a>
+            <i class="icon-angle-right"></i>
+        </li>
+        <li><a href="#">离线打分</a></li>
+    </ul>
+    <div class="row-fluid">
+        <form class="form-search">
+            <input class="input-xlarge" type="text" placeholder="输入车号" id="WagonName_OffLineSearch">
+            <input type="button" value="查询" class="btn btn-large btn-primary" onclick="offLineSearch(getElementById('WagonName_OffLineSearch').value)">
+        </form>
+    </div>
+    <div style="display:none" id="offLineSearchTablesDiv">
+        <div class="row-fluid">
+            <div class="span12 statbox-extendheader blue noMargin">
+                <div class="text-center"><strong>机台:<span id="MachineId"></span> 平均分: <span id="AverageScore"></span></strong></div>
+            </div>
+            <table class="table table-bordered text-center" id="offLineSearchTable">
+            </table>
+        </div>
+    </div>
+</div><!-- end of content -->
+<?php
+include ('./footer/footer_OffLineSearch.html');
+    ?>
+</html>

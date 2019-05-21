@@ -45,7 +45,10 @@ $(document).ready(function() {
         let row = $("table#WangonTable tr").index($(this).closest("tr"));
         //获取某列（从0列开始计数）的值
         let MachineId = $("table#WangonTable").find("tr").eq(row).find("td").eq(0).text();
+        //获取该行该列的cell值，即机台代号
         sessionStorage.MachineId=MachineId;
+        //在SessionStorage中创建MachineId并赋值
         window.location.href="TodayData.html";
+        //跳转至当日作废界面
     });
 });

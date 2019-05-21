@@ -4,7 +4,9 @@ function gotoWagonSearch(WagonName, Procedure){
     window.location.href = "WangonSearch.html";
 }
 $(document).ready(function() {
+    //jquery的ready方法，页面加载完毕时自动触发该方法
     let machineId=sessionStorage.MachineId;
+    //获取SessionStorage中存储的MachineId参数
     $.ajax({
         url: '../php/TodayDataChart.php',
         type: 'GET',

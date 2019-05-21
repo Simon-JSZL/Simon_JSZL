@@ -34,6 +34,7 @@ function dateSearch(StartDate,EndDate,MachineId) {
             dataType: 'JSON',
             data: {"StartDate":StartDate,"EndDate":EndDate,"MachineId":MachineId},
             success: function(data){
+                /** 业务处理代码 **/
                 if(data===0) {
                     $('div#dataSearchTablesDiv').hide();
                     alert("未查询到该时间段内有印刷车次");

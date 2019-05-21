@@ -8,6 +8,10 @@ function endDate(){
     $EndDate=$_GET['EndDate'];
     return $EndDate;
 }
+function machineId(){
+    $MachineId=$_GET['MachineId'];
+    return $MachineId;
+}
 function checkRunning($date){//检测当前日期是否有生产车次
     $ConnInfo=new ConnectInfo();
         $sql_searchdate = "select count(1) as count from dbo.GeneralFail_".machineId()." where convert(varchar(10),Createtime,120) = '" . $date . "'";
@@ -15,10 +19,6 @@ function checkRunning($date){//检测当前日期是否有生产车次
             return true;
         else
             return false;
-}
-function machineId(){
-    $MachineId=$_GET['MachineId'];
-    return $MachineId;
 }
 function  returnInfo(){
     $machineId= MachineId();

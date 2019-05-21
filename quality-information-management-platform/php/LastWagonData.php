@@ -19,7 +19,7 @@ function FindLast2Wagon($MachineId)
     }
     $sql = "select WangonName as WagonName, CreateTime_".$ProcedureName." as CreateTime from dbo.AllIndex where CreateTime_".$ProcedureName." in
     (select top 2 CreateTime_".$ProcedureName." from dbo.AllIndex where MachineId_".$ProcedureName." = '".$MachineId."'
-                                          order by CreateTime_".$ProcedureName." DESC )";
+                                          order by CreateTime_".$ProcedureName." DESC ) order by CreateTime_".$ProcedureName." DESC";
     $query = $ConnInfo->returnQuery($sql);
     while($row = sqlsrv_fetch_array($query)) {
         $WagonInfo[] = $row;
@@ -29,8 +29,8 @@ function FindLast2Wagon($MachineId)
 }
 function LastWagonFails(){
     $MachineId = MachineId();
-    $WagonName = FindLast2Wagon($MachineId)[1]['WagonName'];
-    $CreateTime = FindLast2Wagon($MachineId)[1]['CreateTime']->format('H:i');
+    $WagonName = FindLast2Wagon($MachineId)[0]['WagonName'];
+    $CreateTime = FindLast2Wagon($MachineId)[0]['CreateTime']->format('H:i');
     $WagonFail = new CountingFailWagon();
     $LastWagonGenFail = $WagonFail->generalfail($MachineId,$WagonName);
     $LastWagonConFail = $WagonFail->confail($MachineId,$WagonName);
